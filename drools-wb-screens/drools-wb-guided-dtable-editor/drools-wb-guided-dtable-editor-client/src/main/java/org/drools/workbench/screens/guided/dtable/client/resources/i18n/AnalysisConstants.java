@@ -20,10 +20,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.Messages;
 
 public interface AnalysisConstants
-        extends
-        Messages {
+        extends Messages {
 
-    public static final AnalysisConstants INSTANCE = GWT.create(AnalysisConstants.class);
+    public static final AnalysisConstants INSTANCE = GWT.create( AnalysisConstants.class );
 
     String ConflictingRows();
 

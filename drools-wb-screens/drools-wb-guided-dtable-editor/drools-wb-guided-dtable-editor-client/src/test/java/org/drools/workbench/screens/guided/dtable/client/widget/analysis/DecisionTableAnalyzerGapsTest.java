@@ -16,13 +16,9 @@
 
 package org.drools.workbench.screens.guided.dtable.client.widget.analysis;
 
-import java.util.ArrayList;
-
 import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.drools.workbench.models.datamodel.imports.Import;
 import org.drools.workbench.models.datamodel.oracle.DataType;
-import org.drools.workbench.models.guided.dtable.shared.model.GuidedDecisionTable52;
 import org.drools.workbench.screens.guided.dtable.client.resources.i18n.AnalysisConstants;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.kie.workbench.common.widgets.client.datamodel.AsyncPackageDataModelOracle;
 import org.mockito.Mock;
 
-import static org.drools.workbench.screens.guided.dtable.client.widget.analysis.TestUtil.*;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 

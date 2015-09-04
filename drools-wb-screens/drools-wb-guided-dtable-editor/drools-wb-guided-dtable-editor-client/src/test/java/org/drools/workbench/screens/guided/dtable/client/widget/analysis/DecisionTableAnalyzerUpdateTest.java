@@ -31,6 +31,8 @@ import org.drools.workbench.models.guided.dtable.shared.model.DTCellValue52;
 import org.drools.workbench.models.guided.dtable.shared.model.GuidedDecisionTable52;
 import org.drools.workbench.screens.guided.dtable.client.resources.i18n.AnalysisConstants;
 import org.drools.workbench.screens.guided.dtable.client.widget.analysis.panel.AnalysisReport;
+import org.drools.workbench.screens.guided.dtable.client.widget.analysis.panel.DecisionTableAnalyzer;
+import org.drools.workbench.screens.guided.dtable.client.widget.analysis.panel.ValidateEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +49,7 @@ import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.Updat
 import org.mockito.Mock;
 import org.uberfire.mvp.PlaceRequest;
 
-import static org.drools.workbench.screens.guided.dtable.client.widget.analysis.ExtendedGuidedDecisionTableBuilder.*;
+import static org.drools.workbench.screens.guided.dtable.client.widget.analysis.ExtendedGuidedDecisionTableBuilder.createActionSetField;
 import static org.drools.workbench.screens.guided.dtable.client.widget.analysis.TestUtil.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

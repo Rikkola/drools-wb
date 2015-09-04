@@ -17,8 +17,8 @@
 package org.drools.workbench.screens.guided.dtable.client.widget.analysis;
 
 import org.drools.workbench.models.guided.dtable.shared.model.Pattern52;
-import org.drools.workbench.screens.guided.dtable.client.widget.analysis.condition.NumericIntegerConditionInspector;
-import org.drools.workbench.screens.guided.dtable.client.widget.analysis.condition.StringConditionInspector;
+import org.drools.workbench.screens.guided.dtable.analysis.condition.NumericIntegerConditionInspector;
+import org.drools.workbench.screens.guided.dtable.analysis.condition.StringConditionInspector;
 import org.drools.workbench.screens.guided.dtable.client.widget.analysis.panel.AnalysisReport;
 import org.drools.workbench.screens.guided.dtable.client.widget.analysis.reporting.Issue;
 

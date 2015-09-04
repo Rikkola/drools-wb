@@ -35,7 +35,7 @@ import org.uberfire.java.nio.base.options.CommentedOption;
 import org.uberfire.rpc.SessionInfo;
 
 /**
- * Common methods shared between GuidedRuleEditorServiceImpl and GuidedRuleEditorRenameHelper
+ * Common methods i18n between GuidedRuleEditorServiceImpl and GuidedRuleEditorRenameHelper
  */
 @ApplicationScoped
 public class GuidedRuleEditorServiceUtilities {

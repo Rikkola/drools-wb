@@ -28,7 +28,7 @@ public class TestScenarioXMLElementMigrater {
 
     private static final String ORIGIN_PACKAGE = "org.drools.guvnor.client.modeldriven.testing";
 
-    private static final String TARGET_PACKAGE = "org.drools.workbench.models.testscenarios.shared";
+    private static final String TARGET_PACKAGE = "org.drools.workbench.models.testscenarios.i18n";
 
     private static final Map<String, String> refactoredPackages = new HashMap<String, String>();
 

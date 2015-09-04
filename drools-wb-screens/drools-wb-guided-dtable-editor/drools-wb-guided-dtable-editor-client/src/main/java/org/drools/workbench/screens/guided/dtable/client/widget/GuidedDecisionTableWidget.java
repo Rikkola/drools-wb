@@ -80,7 +80,7 @@ import org.drools.workbench.models.guided.dtable.shared.model.Pattern52;
 import org.drools.workbench.screens.guided.dtable.client.resources.GuidedDecisionTableResources;
 import org.drools.workbench.screens.guided.dtable.client.resources.i18n.GuidedDecisionTableConstants;
 import org.drools.workbench.screens.guided.dtable.client.resources.images.GuidedDecisionTableImageResources508;
-import org.drools.workbench.screens.guided.dtable.client.widget.analysis.DecisionTableAnalyzer;
+import org.drools.workbench.screens.guided.dtable.client.widget.analysis.panel.DecisionTableAnalyzer;
 import org.drools.workbench.screens.guided.dtable.client.widget.table.VerticalDecisionTableWidget;
 import org.drools.workbench.screens.guided.rule.client.editor.RuleAttributeWidget;
 import org.jboss.errai.common.client.api.Caller;

@@ -65,7 +65,6 @@ import org.drools.workbench.models.guided.dtable.shared.model.Pattern52;
 import org.drools.workbench.models.guided.dtable.shared.model.RowNumberCol52;
 import org.drools.workbench.screens.guided.dtable.client.utils.DTCellValueUtilities;
 import org.drools.workbench.screens.guided.dtable.client.utils.GuidedDecisionTableUtils;
-import org.drools.workbench.screens.guided.dtable.client.widget.analysis.DecisionTableAnalyzer;
 import org.drools.workbench.screens.guided.dtable.client.widget.table.events.BoundFactsChangedEvent;
 import org.drools.workbench.screens.guided.dtable.client.widget.table.events.InsertDecisionTableColumnEvent;
 import org.drools.workbench.screens.guided.rule.client.editor.RuleAttributeWidget;
@@ -81,7 +80,6 @@ import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.CellS
 import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.CopyRowsEvent;
 import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.DeleteColumnEvent;
 import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.DeleteRowEvent;
-import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.AfterColumnDeleted;
 import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.InsertColumnEvent;
 import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.InsertRowEvent;
 import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.MoveColumnsEvent;
@@ -92,7 +90,7 @@ import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.Toggl
 import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.UpdateColumnDataEvent;
 import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.UpdateColumnDefinitionEvent;
 import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.UpdateModelEvent;
-import org.drools.workbench.screens.guided.dtable.client.widget.analysis.ValidateEvent;
+import org.drools.workbench.screens.guided.dtable.client.widget.analysis.panel.ValidateEvent;
 
 /**
  * An abstract Decision Table and the necessary boiler-plate to convert from
