@@ -18,6 +18,7 @@ package org.drools.workbench.screens.guided.dtable.analysis.cache;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +29,7 @@ import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.drools.workbench.models.datamodel.imports.Import;
 import org.drools.workbench.models.datamodel.oracle.DataType;
+import org.drools.workbench.models.guided.dtable.shared.model.ConditionCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.DTCellValue52;
 import org.drools.workbench.models.guided.dtable.shared.model.GuidedDecisionTable52;
 import org.drools.workbench.screens.guided.dtable.analysis.AnalysisDecisionTableUtils;
@@ -78,9 +80,26 @@ public class RowInspectorCacheTest {
                         {7, "description", 0, 1, true}} )
                 .build();
 
-        cache = new RowInspectorCache( mock( AnalysisDecisionTableUtils.class ),
-                                       table52,
-                                       updateHandler );
+        cache = new RowInspectorCache(
+                new AnalysisDecisionTableUtils() {
+
+                    @Override
+                    public String getType( ConditionCol52 conditionColumn ) {
+                        return null;
+                    }
+
+                    @Override
+                    public String[] getValueList( ConditionCol52 conditionColumn ) {
+                        return new String[0];
+                    }
+
+                    @Override
+                    public String format( Date dateValue ) {
+                        return null;
+                    }
+                },
+                table52,
+                updateHandler );
     }
 
     @Test
