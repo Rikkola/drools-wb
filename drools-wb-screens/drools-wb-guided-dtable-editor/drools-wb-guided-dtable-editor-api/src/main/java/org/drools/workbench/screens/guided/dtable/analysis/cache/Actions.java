@@ -23,7 +23,9 @@ import org.drools.workbench.screens.guided.dtable.analysis.checks.util.IsConflic
 import org.drools.workbench.screens.guided.dtable.analysis.checks.util.IsRedundant;
 import org.drools.workbench.screens.guided.dtable.analysis.checks.util.IsSubsuming;
 import org.drools.workbench.screens.guided.dtable.analysis.checks.util.Redundancy;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
+@Portable
 public class Actions
         extends MultiMap<ActionInspectorKey, ActionInspector>
         implements IsRedundant,

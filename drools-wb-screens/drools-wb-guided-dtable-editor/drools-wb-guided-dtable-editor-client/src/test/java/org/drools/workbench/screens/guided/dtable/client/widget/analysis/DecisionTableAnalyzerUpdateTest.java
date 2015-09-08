@@ -49,7 +49,7 @@ import org.kie.workbench.common.widgets.decoratedgrid.client.widget.events.Updat
 import org.mockito.Mock;
 import org.uberfire.mvp.PlaceRequest;
 
-import static org.drools.workbench.screens.guided.dtable.client.widget.analysis.ExtendedGuidedDecisionTableBuilder.createActionSetField;
+import static org.drools.workbench.screens.guided.dtable.client.widget.analysis.ExtendedGuidedDecisionTableBuilder.*;
 import static org.drools.workbench.screens.guided.dtable.client.widget.analysis.TestUtil.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -322,12 +322,13 @@ public class DecisionTableAnalyzerUpdateTest {
         assertTrue( "Was not empty", report.getAnalysisData().isEmpty() );
     }
 
-    // TODO: Move Column
-    // TODO: Remove add row/column
     private DecisionTableAnalyzer getDecisionTableAnalyzer( GuidedDecisionTable52 table52 ) {
+        AnalysisServiceCallerMock analysisService = new AnalysisServiceCallerMock();
+        analysisService.setModel( table52 );
         return new DecisionTableAnalyzer( mock( PlaceRequest.class),
                                           oracle,
                                           table52,
+                                          analysisService,
                                           mock( EventBus.class ) ) {
             @Override protected void sendReport( AnalysisReport report ) {
                 analysisReport = report;

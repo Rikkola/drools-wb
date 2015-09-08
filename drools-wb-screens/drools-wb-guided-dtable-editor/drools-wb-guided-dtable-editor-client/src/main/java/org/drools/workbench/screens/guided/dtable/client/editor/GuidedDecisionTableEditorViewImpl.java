@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import org.drools.workbench.models.datamodel.workitems.PortableWorkDefinition;
 import org.drools.workbench.models.guided.dtable.shared.model.GuidedDecisionTable52;
 import org.drools.workbench.screens.guided.dtable.client.widget.GuidedDecisionTableWidget;
+import org.drools.workbench.screens.guided.dtable.service.AnalysisService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.services.shared.rulename.RuleNamesService;
@@ -57,6 +58,7 @@ public class GuidedDecisionTableEditorViewImpl
                             final Set<PortableWorkDefinition> workItemDefinitions,
                             final AsyncPackageDataModelOracle oracle,
                             final Caller<RuleNamesService> ruleNamesService,
+                            final Caller<AnalysisService> analysisService,
                             final boolean isReadOnly ) {
         this.model = model;
         this.editor = new GuidedDecisionTableWidget( place,
@@ -65,6 +67,7 @@ public class GuidedDecisionTableEditorViewImpl
                                                      workItemDefinitions,
                                                      oracle,
                                                      ruleNamesService,
+                                                     analysisService,
                                                      identity,
                                                      isReadOnly );
         panel.setWidget( this.editor );

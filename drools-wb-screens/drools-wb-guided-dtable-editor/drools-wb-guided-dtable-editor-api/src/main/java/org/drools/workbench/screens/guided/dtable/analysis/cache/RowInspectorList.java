@@ -22,7 +22,9 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.drools.workbench.screens.guided.dtable.analysis.RowInspector;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
+@Portable
 public class RowInspectorList
         extends ArrayList<RowInspector> {
 

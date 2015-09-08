@@ -72,10 +72,14 @@ public class DecisionTableAnalyzerTest {
 
     @Test
     public void testEmpty() throws Exception {
+        AnalysisServiceCallerMock analysisService = new AnalysisServiceCallerMock();
+        GuidedDecisionTable52 model = new GuidedDecisionTable52();
+        analysisService.setModel( model );
         DecisionTableAnalyzer analyzer = new DecisionTableAnalyzer( mock( PlaceRequest.class ),
                                                                     new AsyncPackageDataModelOracleImpl(),
-                                                                   new GuidedDecisionTable52(),
-                                                                   mock( EventBus.class ) ) {
+                                                                    model,
+                                                                    analysisService,
+                                                                    mock( EventBus.class ) ) {
             @Override protected void sendReport( AnalysisReport report ) {
                 analysisReport = report;
             }
@@ -242,9 +246,12 @@ public class DecisionTableAnalyzerTest {
     }
 
     private DecisionTableAnalyzer getDecisionTableAnalyzer( GuidedDecisionTable52 table52 ) {
+        AnalysisServiceCallerMock analysisService = new AnalysisServiceCallerMock();
+        analysisService.setModel( table52 );
         return new DecisionTableAnalyzer( mock( PlaceRequest.class ),
                                           oracle,
                                           table52,
+                                          analysisService,
                                           mock( EventBus.class ) ) {
             @Override protected void sendReport( AnalysisReport report ) {
                 analysisReport = report;

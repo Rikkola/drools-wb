@@ -82,6 +82,7 @@ import org.drools.workbench.screens.guided.dtable.client.resources.i18n.GuidedDe
 import org.drools.workbench.screens.guided.dtable.client.resources.images.GuidedDecisionTableImageResources508;
 import org.drools.workbench.screens.guided.dtable.client.widget.analysis.panel.DecisionTableAnalyzer;
 import org.drools.workbench.screens.guided.dtable.client.widget.table.VerticalDecisionTableWidget;
+import org.drools.workbench.screens.guided.dtable.service.AnalysisService;
 import org.drools.workbench.screens.guided.rule.client.editor.RuleAttributeWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -171,6 +172,7 @@ public class GuidedDecisionTableWidget extends Composite
                                       final Set<PortableWorkDefinition> workItemDefinitions,
                                       final AsyncPackageDataModelOracle oracle,
                                       final Caller<RuleNamesService> ruleNameService,
+                                      final Caller<AnalysisService> analysisService,
                                       final User identity,
                                       final boolean isReadOnly ) {
         this.path = path;
@@ -184,7 +186,7 @@ public class GuidedDecisionTableWidget extends Composite
 
         this.layout = new VerticalPanel();
 
-        decisionTableAnalyzer = new DecisionTableAnalyzer( place, oracle, model, eventBus );
+        decisionTableAnalyzer = new DecisionTableAnalyzer( place, oracle, model, analysisService, eventBus );
 
         setupDecisionTable();
 

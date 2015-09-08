@@ -20,6 +20,7 @@ import java.util.Set;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.drools.workbench.models.datamodel.workitems.PortableWorkDefinition;
 import org.drools.workbench.models.guided.dtable.shared.model.GuidedDecisionTable52;
+import org.drools.workbench.screens.guided.dtable.service.AnalysisService;
 import org.jboss.errai.common.client.api.Caller;
 import org.kie.workbench.common.services.shared.rulename.RuleNamesService;
 import org.kie.workbench.common.widgets.client.datamodel.AsyncPackageDataModelOracle;
@@ -39,6 +40,7 @@ public interface GuidedDecisionTableEditorView extends KieEditorView,
                      final Set<PortableWorkDefinition> workItemDefinitions,
                      final AsyncPackageDataModelOracle oracle,
                      final Caller<RuleNamesService> ruleNamesService,
+                     final Caller<AnalysisService> analysisService,
                      final boolean isReadOnly );
 
     GuidedDecisionTable52 getContent();

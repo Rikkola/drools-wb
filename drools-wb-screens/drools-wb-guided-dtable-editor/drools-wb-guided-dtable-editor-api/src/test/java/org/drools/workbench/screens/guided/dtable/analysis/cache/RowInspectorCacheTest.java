@@ -35,6 +35,7 @@ import org.drools.workbench.models.guided.dtable.shared.model.GuidedDecisionTabl
 import org.drools.workbench.screens.guided.dtable.analysis.AnalysisDecisionTableUtils;
 import org.drools.workbench.screens.guided.dtable.analysis.ExtendedGuidedDecisionTableBuilder;
 import org.drools.workbench.screens.guided.dtable.analysis.RowInspector;
+import org.drools.workbench.screens.guided.dtable.analysis.RowInspectorGenerator;
 import org.drools.workbench.screens.guided.dtable.analysis.UpdateHandler;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +59,8 @@ public class RowInspectorCacheTest {
     @GwtMock
     DateTimeFormat dateTimeFormat;
 
+    private RowInspectorGenerator generator;
+
     @Before
     public void setUp() throws Exception {
         Map<String, String> preferences = new HashMap<String, String>();
@@ -80,26 +83,29 @@ public class RowInspectorCacheTest {
                         {7, "description", 0, 1, true}} )
                 .build();
 
-        cache = new RowInspectorCache(
-                new AnalysisDecisionTableUtils() {
+        cache = new RowInspectorCache();
+        generator = new RowInspectorGenerator( new AnalysisDecisionTableUtils() {
 
-                    @Override
-                    public String getType( ConditionCol52 conditionColumn ) {
-                        return null;
-                    }
+            @Override
+            public String getType( ConditionCol52 conditionColumn ) {
+                return null;
+            }
 
-                    @Override
-                    public String[] getValueList( ConditionCol52 conditionColumn ) {
-                        return new String[0];
-                    }
+            @Override
+            public String[] getValueList( ConditionCol52 conditionColumn ) {
+                return new String[0];
+            }
 
-                    @Override
-                    public String format( Date dateValue ) {
-                        return null;
-                    }
-                },
-                table52,
-                updateHandler );
+            @Override
+            public String format( Date dateValue ) {
+                return null;
+            }
+        },
+                                               table52,
+                                               cache );
+
+        generator.setUpdateHandler( updateHandler );
+        generator.reset();
     }
 
     @Test
@@ -147,7 +153,7 @@ public class RowInspectorCacheTest {
         table52.getData().get( 5 ).remove( 4 );
         table52.getData().get( 6 ).remove( 4 );
 
-        cache.reset();
+        generator.reset();
 
         Collection<RowInspector> all = cache.all();
         assertEquals( 7, all.size() );
@@ -172,8 +178,8 @@ public class RowInspectorCacheTest {
         ArgumentCaptor<RowInspector> oldInspectorCaptor = ArgumentCaptor.forClass( RowInspector.class );
         ArgumentCaptor<RowInspector> newInspectorCaptor = ArgumentCaptor.forClass( RowInspector.class );
 
-        cache.updateRowInspectors( coordinates,
-                                   table52.getData() );
+        generator.updateRowInspectors( coordinates,
+                                       table52.getData() );
 
         verify( updateHandler ).updateRow( oldInspectorCaptor.capture(), newInspectorCaptor.capture() );
         assertEquals( 3, oldInspectorCaptor.getValue().getRowIndex() );
@@ -192,8 +198,8 @@ public class RowInspectorCacheTest {
         HashSet<Coordinate> coordinates = new HashSet<Coordinate>();
         coordinates.add( new Coordinate( 1, 1 ) );
 
-        cache.updateRowInspectors( coordinates,
-                                   table52.getData() );
+        generator.updateRowInspectors( coordinates,
+                                       table52.getData() );
 
         verify( updateHandler, never() ).updateRow( any( RowInspector.class ), any( RowInspector.class ) );
     }

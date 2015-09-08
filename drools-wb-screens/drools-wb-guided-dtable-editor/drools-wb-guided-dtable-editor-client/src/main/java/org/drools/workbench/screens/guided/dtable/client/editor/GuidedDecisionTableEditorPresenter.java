@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.drools.workbench.models.guided.dtable.shared.model.GuidedDecisionTable52;
 import org.drools.workbench.screens.guided.dtable.client.type.GuidedDTableResourceType;
 import org.drools.workbench.screens.guided.dtable.model.GuidedDecisionTableEditorContent;
+import org.drools.workbench.screens.guided.dtable.service.AnalysisService;
 import org.drools.workbench.screens.guided.dtable.service.GuidedDecisionTableEditorService;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.jboss.errai.common.client.api.Caller;
@@ -77,6 +78,9 @@ public class GuidedDecisionTableEditorPresenter
 
     @Inject
     private Caller<RuleNamesService> ruleNameService;
+
+    @Inject
+    private Caller<AnalysisService> analysisService;
 
     @Inject
     private GuidedDTableResourceType type;
@@ -158,6 +162,7 @@ public class GuidedDecisionTableEditorPresenter
                          content.getWorkItemDefinitions(),
                          oracle,
                          ruleNameService,
+                         analysisService,
                          isReadOnly );
     }
 

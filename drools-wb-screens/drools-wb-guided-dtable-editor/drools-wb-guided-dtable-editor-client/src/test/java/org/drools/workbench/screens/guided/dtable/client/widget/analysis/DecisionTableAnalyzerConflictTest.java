@@ -29,6 +29,7 @@ import org.drools.workbench.models.datamodel.imports.Import;
 import org.drools.workbench.models.datamodel.oracle.DataType;
 import org.drools.workbench.models.guided.dtable.shared.model.DTCellValue52;
 import org.drools.workbench.models.guided.dtable.shared.model.GuidedDecisionTable52;
+import org.drools.workbench.screens.guided.dtable.analysis.AnalysisContent;
 import org.drools.workbench.screens.guided.dtable.client.resources.i18n.AnalysisConstants;
 import org.drools.workbench.screens.guided.dtable.client.widget.analysis.panel.AnalysisReport;
 import org.drools.workbench.screens.guided.dtable.client.widget.analysis.panel.DecisionTableAnalyzer;
@@ -59,6 +60,7 @@ public class DecisionTableAnalyzerConflictTest {
     @Mock
     AsyncPackageDataModelOracle oracle;
     private AnalysisReport analysisReport;
+    private AnalysisContent analysisContent;
 
     @Before
     public void setUp() throws Exception {
@@ -224,9 +226,12 @@ public class DecisionTableAnalyzerConflictTest {
     }
 
     private DecisionTableAnalyzer getAnalyser( final GuidedDecisionTable52 table52 ) {
+        AnalysisServiceCallerMock analysisService = new AnalysisServiceCallerMock();
+        analysisService.setModel( table52 );
         return new DecisionTableAnalyzer( mock( PlaceRequest.class ),
                                           oracle,
                                           table52,
+                                          analysisService,
                                           mock( EventBus.class ) ) {
             @Override protected void sendReport( AnalysisReport report ) {
                 analysisReport = report;

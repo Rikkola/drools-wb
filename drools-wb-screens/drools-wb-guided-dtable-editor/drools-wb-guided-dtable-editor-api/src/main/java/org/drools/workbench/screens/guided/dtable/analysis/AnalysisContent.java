@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-package org.drools.workbench.screens.guided.dtable.analysis.checks.base;
+package org.drools.workbench.screens.guided.dtable.analysis;
 
-import org.drools.workbench.screens.guided.dtable.analysis.RowInspector;
-import org.drools.workbench.screens.guided.dtable.analysis.cache.Filter;
 import org.drools.workbench.screens.guided.dtable.analysis.cache.RowInspectorCache;
+import org.drools.workbench.screens.guided.dtable.analysis.checks.base.Checks;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
-public class ConflictingActionsFilter
-        implements Filter {
+@Portable
+public class AnalysisContent {
 
-    private final RowInspector rowInspector;
+    private Checks checks;
 
-    public ConflictingActionsFilter( final RowInspector rowInspector ) {
-        this.rowInspector = rowInspector;
+    private RowInspectorCache cache;
+
+    public void setChecks( Checks checks ) {
+        this.checks = checks;
     }
 
-    @Override
-    public boolean accept( final RowInspector other ) {
-        return rowInspector.getActions().conflicts( other.getActions() );
+    public Checks getChecks() {
+        return checks;
+    }
+
+    public RowInspectorCache getCache() {
+        return cache;
+    }
+
+    public void setCache( RowInspectorCache cache ) {
+        this.cache = cache;
     }
 }

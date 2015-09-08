@@ -80,9 +80,14 @@ public class DecisionTableAnalyzerFromFileTest {
     }
 
     private DecisionTableAnalyzer getDecisionTableAnalyzer( GuidedDecisionTable52 table52 ) {
+        AnalysisServiceCallerMock analysisService = new AnalysisServiceCallerMock();
+
+        analysisService.setModel( table52 );
+
         return new DecisionTableAnalyzer( mock( PlaceRequest.class ),
                                           oracle,
                                           table52,
+                                          analysisService,
                                           mock( EventBus.class ) ) {
             @Override
             protected void sendReport( AnalysisReport report ) {

@@ -24,7 +24,9 @@ import org.drools.workbench.screens.guided.dtable.analysis.checks.util.IsSubsumi
 import org.drools.workbench.screens.guided.dtable.analysis.checks.util.Redundancy;
 import org.drools.workbench.screens.guided.dtable.analysis.condition.ConditionInspector;
 import org.drools.workbench.screens.guided.dtable.analysis.condition.ConditionInspectorKey;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
+@Portable
 public class Conditions
         extends MultiMap<ConditionInspectorKey, ConditionInspector>
         implements IsRedundant,

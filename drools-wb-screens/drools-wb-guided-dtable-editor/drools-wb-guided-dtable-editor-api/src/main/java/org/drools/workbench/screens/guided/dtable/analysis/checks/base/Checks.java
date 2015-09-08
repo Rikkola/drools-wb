@@ -31,7 +31,9 @@ import org.drools.workbench.screens.guided.dtable.analysis.checks.DetectMultiple
 import org.drools.workbench.screens.guided.dtable.analysis.checks.DetectRedundantActionCheck;
 import org.drools.workbench.screens.guided.dtable.analysis.checks.DetectRedundantConditionsCheck;
 import org.drools.workbench.screens.guided.dtable.analysis.checks.DetectRedundantRowsCheck;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
+@Portable
 public class Checks {
 
     private final Set<Check> set = new HashSet<Check>();

@@ -19,15 +19,16 @@ package org.drools.workbench.screens.guided.dtable.analysis.checks.base;
 import java.util.Collection;
 
 import org.drools.workbench.screens.guided.dtable.analysis.RowInspector;
+import org.drools.workbench.screens.guided.dtable.analysis.cache.Filter;
 import org.drools.workbench.screens.guided.dtable.analysis.cache.RowInspectorCache;
 
 public abstract class OneToManyCheck
         extends SingleCheck {
 
-    private RowInspectorCache.Filter filter;
+    private Filter filter;
 
     public OneToManyCheck( final RowInspector rowInspector,
-                           final RowInspectorCache.Filter filter ) {
+                           final Filter filter ) {
         super( rowInspector );
         this.filter = filter;
     }

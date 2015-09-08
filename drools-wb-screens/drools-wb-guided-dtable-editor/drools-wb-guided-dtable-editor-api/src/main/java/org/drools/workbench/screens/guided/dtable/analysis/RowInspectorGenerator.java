@@ -18,6 +18,7 @@ package org.drools.workbench.screens.guided.dtable.analysis;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.drools.workbench.models.guided.dtable.shared.model.ActionCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.ActionInsertFactCol52;
@@ -33,17 +34,25 @@ import org.drools.workbench.screens.guided.dtable.analysis.action.ActionInspecto
 import org.drools.workbench.screens.guided.dtable.analysis.action.ActionInspectorKey;
 import org.drools.workbench.screens.guided.dtable.analysis.action.FactFieldColumnActionInspectorKey;
 import org.drools.workbench.screens.guided.dtable.analysis.action.UnrecognizedActionInspectorKey;
+import org.drools.workbench.screens.guided.dtable.analysis.cache.Coordinate;
 import org.drools.workbench.screens.guided.dtable.analysis.cache.RowInspectorCache;
 import org.drools.workbench.screens.guided.dtable.analysis.condition.ConditionInspector;
 import org.drools.workbench.screens.guided.dtable.analysis.condition.ConditionInspectorBuilder;
 
 public class RowInspectorGenerator {
 
-    private final RowInspectorCache cache;
-    private final AnalysisDecisionTableUtils utils;
-    private final GuidedDecisionTable52 model;
+    private static final int DESCRIPTION_COLUMN = 1;
+
+    private RowInspectorCache cache;
+    private AnalysisDecisionTableUtils utils;
+    private GuidedDecisionTable52 model;
     private RowInspector rowInspector;
     private List<DTCellValue52> row;
+
+    private UpdateHandler updateHandler;
+
+    public RowInspectorGenerator() {
+    }
 
     public RowInspectorGenerator( AnalysisDecisionTableUtils utils,
                                   GuidedDecisionTable52 model,
@@ -51,8 +60,22 @@ public class RowInspectorGenerator {
         this.cache = cache;
         this.utils = utils;
         this.model = model;
+
     }
 
+    public void reset() {
+        cache.getRowInspectors().clear();
+        cache.getConditions().clear();
+        for (RowInspector rowInspector : generate()) {
+            add( rowInspector );
+        }
+    }
+
+    private boolean add( final RowInspector rowInspector ) {
+        boolean add = cache.getRowInspectors().add( rowInspector );
+        cache.getConditions().addAll( rowInspector.getConditions().allValues() );
+        return add;
+    }
     public List<RowInspector> generate() {
         ArrayList<RowInspector> rowInspectors = new ArrayList<RowInspector>();
 
@@ -80,6 +103,20 @@ public class RowInspectorGenerator {
         return rowInspector;
     }
 
+    public void updateRowInspectors( final Set<Coordinate> coordinates,
+                                     final List<List<DTCellValue52>> data ) {
+        for (Coordinate coordinate : coordinates) {
+            if ( coordinate.getCol() != DESCRIPTION_COLUMN ) {
+                RowInspector oldRow = cache.getRowInspectors().getRowInspector( coordinate.getRow() );
+                List<DTCellValue52> row = data.get( coordinate.getRow() );
+                RowInspector rowInspector = generate( coordinate.getRow(), row );
+
+                updateHandler.updateRow( oldRow, rowInspector );
+                cache.getRowInspectors().set( coordinate.getRow(), rowInspector );
+            }
+        }
+
+    }
     private void addActionInspector() {
         for ( ActionCol52 actionCol : model.getActionCols() ) {
 
@@ -107,6 +144,19 @@ public class RowInspectorGenerator {
                 }
             }
         }
+    }
+
+    public void setUpdateHandler( final UpdateHandler updateHandler ) {
+        this.updateHandler = updateHandler;
+    }
+
+    public RowInspector addRow( final int index,
+                                final List<DTCellValue52> row ) {
+        RowInspector rowInspector = generate( index,
+                                              row );
+        cache.getRowInspectors().increaseRowNumbers( index );
+        add( rowInspector );
+        return rowInspector;
     }
 
     private boolean rowHasIndex( final int columnIndex ) {

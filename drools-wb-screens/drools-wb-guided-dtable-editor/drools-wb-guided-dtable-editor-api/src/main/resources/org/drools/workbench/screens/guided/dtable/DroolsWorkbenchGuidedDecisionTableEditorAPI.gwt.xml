@@ -31,5 +31,6 @@
   <source path="service"/>
   <source path="type"/>
   <source path="analysis"/>
+  <source path="analysis.checks.base"/>
 
 </module>

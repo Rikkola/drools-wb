@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-package org.drools.workbench.screens.guided.dtable.analysis.checks.base;
+package org.drools.workbench.screens.guided.dtable.analysis.cache;
 
 import org.drools.workbench.screens.guided.dtable.analysis.RowInspector;
-import org.drools.workbench.screens.guided.dtable.analysis.cache.Filter;
-import org.drools.workbench.screens.guided.dtable.analysis.cache.RowInspectorCache;
 
-public class ConflictingActionsFilter
-        implements Filter {
+public interface Filter {
 
-    private final RowInspector rowInspector;
+    boolean accept( final RowInspector rowInspector );
 
-    public ConflictingActionsFilter( final RowInspector rowInspector ) {
-        this.rowInspector = rowInspector;
-    }
-
-    @Override
-    public boolean accept( final RowInspector other ) {
-        return rowInspector.getActions().conflicts( other.getActions() );
-    }
 }

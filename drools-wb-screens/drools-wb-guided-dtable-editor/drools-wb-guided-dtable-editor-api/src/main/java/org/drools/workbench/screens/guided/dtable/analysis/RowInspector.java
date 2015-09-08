@@ -25,19 +25,24 @@ import org.drools.workbench.screens.guided.dtable.analysis.checks.util.IsConflic
 import org.drools.workbench.screens.guided.dtable.analysis.checks.util.IsRedundant;
 import org.drools.workbench.screens.guided.dtable.analysis.checks.util.IsSubsuming;
 import org.drools.workbench.screens.guided.dtable.analysis.condition.ConditionInspector;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
+@Portable
 public class RowInspector
         implements IsRedundant,
                    IsSubsuming,
                    IsConflicting {
 
-    private final GuidedDecisionTable52.TableFormat tableFormat;
-    private final RowInspectorCache cache;
+    private GuidedDecisionTable52.TableFormat tableFormat;
+    private RowInspectorCache cache;
 
     private final Conditions conditions = new Conditions();
     private final Actions actions = new Actions();
 
     private int rowIndex;
+
+    public RowInspector() {
+    }
 
     public RowInspector( final int rowIndex,
                          final GuidedDecisionTable52.TableFormat tableFormat,
