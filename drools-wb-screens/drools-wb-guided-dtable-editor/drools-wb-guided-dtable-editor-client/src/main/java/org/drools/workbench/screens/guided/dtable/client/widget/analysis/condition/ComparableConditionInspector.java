@@ -61,7 +61,9 @@ public class ComparableConditionInspector<T extends Comparable<T>>
                             return false;
                     }
                 default:
-                    return !overlaps( other );
+                    boolean overlaps = overlaps( other );
+                    boolean overlapsNOT = !overlaps;
+                    return overlapsNOT;
             }
         }
         return false;
@@ -102,10 +104,7 @@ public class ComparableConditionInspector<T extends Comparable<T>>
                             return !covers( anotherPoint.getValue() );
                         }
                     case EQUALS:
-                        switch ( operator ) {
-                            case NOT_EQUALS:
-                                return !( (ComparableConditionInspector) other ).covers( getValue() );
-                        }
+                        return covers( anotherPoint.getValue() );
                     case GREATER_THAN_OR_EQUALS:
                     case LESS_THAN_OR_EQUALS:
                         switch ( operator ) {
@@ -127,8 +126,10 @@ public class ComparableConditionInspector<T extends Comparable<T>>
                         }
                     case GREATER_THAN:
                         switch ( operator ) {
-                            case NOT_EQUALS:
-                                return !covers( anotherPoint.getValue() );
+                            case EQUALS:
+                                boolean b = !covers( anotherPoint.getValue() );
+                                boolean covers = anotherPoint.covers( getValue() );
+                                return b || covers;
                             case GREATER_THAN:
                                 return valueIsEqualTo( anotherPoint.getValue() )
                                         || anotherPoint.covers( getValue() );
