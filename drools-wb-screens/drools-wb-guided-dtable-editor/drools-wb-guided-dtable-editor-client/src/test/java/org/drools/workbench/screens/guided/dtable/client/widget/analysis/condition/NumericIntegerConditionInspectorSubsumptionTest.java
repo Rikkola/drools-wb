@@ -91,7 +91,7 @@ public class NumericIntegerConditionInspectorSubsumptionTest {
             { "==", 0, "<=", -1, false, false },
             { "==", 0, "<=", -10, false, false },
 
-            { "==", 0, "!=", 1, false, true },
+            { "==", 0, "!=", 1, true, false },
             { "==", 0, ">", -1, false, true },
             { "==", 0, ">", -10, false, true },
             { "==", 0, ">=", 0, false, true },

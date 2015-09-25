@@ -110,7 +110,7 @@ public class NumericIntegerConditionInspectorConflictOverlapTest {
             { "!=", 0, "<=", 0, true },
             { "!=", 0, "<=", 10, true },
 
-            { ">", 0, "<", 1, false },
+            { ">", 0, "<", 1, true },
             { ">", 0, "<", -10, false },
             { ">", 0, "<=", 0, false },
             { ">", 0, "<=", -10, false },

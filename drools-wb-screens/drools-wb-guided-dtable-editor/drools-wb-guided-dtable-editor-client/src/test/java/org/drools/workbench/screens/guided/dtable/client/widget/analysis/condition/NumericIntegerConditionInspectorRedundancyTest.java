@@ -108,7 +108,7 @@ public class NumericIntegerConditionInspectorRedundancyTest {
             { "!=", 0, "<", 1, false },
             { "!=", 0, "<=", 1, false },
 
-            { ">", 0, ">=", 1, false },
+            { ">", 0, ">=", 1, true },
             { ">", 0, "<", 1, false },
             { ">", 0, "<=", 1, false },
 

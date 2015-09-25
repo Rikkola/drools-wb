@@ -18,6 +18,7 @@ package org.drools.workbench.screens.guided.dtable.client.widget.analysis.condit
 
 import org.drools.workbench.models.guided.dtable.shared.model.Pattern52;
 import org.drools.workbench.screens.guided.dtable.client.widget.analysis.checks.util.Covers;
+import org.drools.workbench.screens.guided.dtable.client.widget.analysis.checks.util.IsSubsuming;
 import org.drools.workbench.screens.guided.dtable.client.widget.analysis.checks.util.Operator;
 
 public class ComparableConditionInspector<T extends Comparable<T>>
@@ -50,9 +51,6 @@ public class ComparableConditionInspector<T extends Comparable<T>>
 
     @Override
     public boolean conflicts( Object other ) {
-        if ( this.equals( other ) ) {
-            return false;
-        }
         if ( other instanceof ComparableConditionInspector ) {
             switch ( ( (ComparableConditionInspector) other ).getOperator() ) {
                 case NOT_EQUALS:
@@ -71,17 +69,11 @@ public class ComparableConditionInspector<T extends Comparable<T>>
 
     @Override
     public boolean isRedundant( Object object ) {
-        if ( this.equals( object ) ) {
-            return true;
+        if ( object instanceof IsSubsuming ) {
+            return subsumes( object ) && ((IsSubsuming) object).subsumes( this );
+        } else {
+            return false;
         }
-        if ( object instanceof ComparableConditionInspector ) {
-            ComparableConditionInspector other = (ComparableConditionInspector) object;
-            return this.operator.equals( other.operator )
-                    && nullSafeEquals( value, other.value );
-
-        }
-
-        return false;
     }
 
     @Override
@@ -98,45 +90,81 @@ public class ComparableConditionInspector<T extends Comparable<T>>
             if ( anotherPoint != null ) {
                 switch ( anotherPoint.getOperator() ) {
                     case NOT_EQUALS:
-                        if ( operator.equals( Operator.NOT_EQUALS ) ) {
-                            return getValue().equals( anotherPoint.getValue() );
-                        } else {
-                            return !covers( anotherPoint.getValue() );
+                        switch (operator) {
+                            case EQUALS:
+                                return !getValue().equals( anotherPoint.getValue() );
+                            default:
+                                return true;
                         }
                     case EQUALS:
-                        return covers( anotherPoint.getValue() );
+                        switch (operator) {
+                            case NOT_EQUALS:
+                                return !getValue().equals( anotherPoint.getValue() );
+                            default:
+                                return covers( anotherPoint.getValue() );
+                        }
                     case GREATER_THAN_OR_EQUALS:
+                        switch (operator) {
+                            case NOT_EQUALS:
+                                return true;
+                            case LESS_THAN:
+                            case BEFORE:
+                                return anotherPoint.covers( getValue() )
+                                        && covers( anotherPoint.getValue() );
+                            default:
+                                return covers( anotherPoint.getValue() )
+                                        || anotherPoint.covers( getValue() );
+                        }
                     case LESS_THAN_OR_EQUALS:
                         switch ( operator ) {
                             case NOT_EQUALS:
-                                return !covers( anotherPoint.getValue() );
+                                return true;
+                            case GREATER_THAN:
+                            case AFTER:
+                                return anotherPoint.covers( getValue() )
+                                        && covers( anotherPoint.getValue() );
                             default:
-                                return covers( anotherPoint.getValue() ) || anotherPoint.covers( getValue() );
+                                return covers( anotherPoint.getValue() )
+                                        || anotherPoint.covers( getValue() );
                         }
                     case LESS_THAN:
+                    case BEFORE:
                         switch ( operator ) {
+                            case EQUALS:
+                                return anotherPoint.covers( getValue() );
                             case NOT_EQUALS:
-                                return !covers( anotherPoint.getValue() );
+                                return true;
                             case LESS_THAN:
+                            case BEFORE:
                                 return valueIsEqualTo( anotherPoint.getValue() )
-                                        || anotherPoint.covers( getValue() );
+                                        || anotherPoint.covers( getValue() )
+                                        || covers( anotherPoint.getValue() );
+                            case GREATER_THAN_OR_EQUALS:
+                                return anotherPoint.covers( getValue() )
+                                        && covers( anotherPoint.getValue() );
                             default:
-                                return covers( anotherPoint.getValue() ) || anotherPoint.covers( getValue() );
+                                return covers( anotherPoint.getValue() )
+                                        || anotherPoint.covers( getValue() );
 
                         }
                     case GREATER_THAN:
+                    case AFTER:
                         switch ( operator ) {
                             case EQUALS:
-                                boolean b = !covers( anotherPoint.getValue() );
-                                boolean covers = anotherPoint.covers( getValue() );
-                                return b || covers;
+                                return anotherPoint.covers( getValue() );
+                            case NOT_EQUALS:
+                                return true;
                             case GREATER_THAN:
+                            case AFTER:
                                 return valueIsEqualTo( anotherPoint.getValue() )
-                                        || anotherPoint.covers( getValue() );
-                            case LESS_THAN:
-                                return covers( anotherPoint.getValue() ) || anotherPoint.covers( getValue() );
+                                        || anotherPoint.covers( getValue() )
+                                        || covers( anotherPoint.getValue() );
+                            case LESS_THAN_OR_EQUALS:
+                                return anotherPoint.covers( getValue() )
+                                        && covers( anotherPoint.getValue() );
                             default:
-                                return covers( anotherPoint.getValue() ) || anotherPoint.covers( getValue() );
+                                return covers( anotherPoint.getValue() )
+                                        || anotherPoint.covers( getValue() );
                         }
                     default:
                         return false;
@@ -156,13 +184,25 @@ public class ComparableConditionInspector<T extends Comparable<T>>
             if ( anotherPoint != null ) {
                 switch ( anotherPoint.getOperator() ) {
                     case NOT_EQUALS:
-                        if ( operator.equals( Operator.NOT_EQUALS ) ) {
-                            return getValue().equals( anotherPoint.getValue() );
-                        } else {
-                            return !covers( anotherPoint.getValue() );
+                        switch (operator) {
+                            case NOT_EQUALS:
+                                return getValue().equals( anotherPoint.getValue() );
+                            case EQUALS:
+                                boolean valueIsEqualTo = valueIsEqualTo( anotherPoint.getValue() );
+                                boolean covers = covers( anotherPoint.getValue() );
+                                return !valueIsEqualTo && !covers;
+                            default:
+                                return false;
                         }
                     case EQUALS:
-                        return covers( anotherPoint.getValue() );
+                        switch (operator) {
+                            case NOT_EQUALS:
+                                boolean valueIsEqualTo = valueIsEqualTo( anotherPoint.getValue() );
+                                boolean covers = covers( anotherPoint.getValue() );
+                                return !valueIsEqualTo && !covers;
+                            default:
+                                return covers( anotherPoint.getValue() );
+                        }
                     case GREATER_THAN_OR_EQUALS:
                         switch ( operator ) {
                             case GREATER_THAN_OR_EQUALS:
@@ -227,8 +267,10 @@ public class ComparableConditionInspector<T extends Comparable<T>>
                 case LESS_THAN_OR_EQUALS:
                     return valueIsLessThanOrEqualTo( otherValue );
                 case LESS_THAN:
+                case BEFORE:
                     return valueIsLessThan( otherValue );
                 case GREATER_THAN:
+                case AFTER:
                     return valueIsGreaterThan( otherValue );
                 default:
                     return false;

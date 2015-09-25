@@ -26,7 +26,10 @@ public enum Operator {
     LESS_THAN_OR_EQUALS( "<=" ),
     NOT_EQUALS( "!=" ),
 
-    IN( "in" );
+    IN( "in" ),
+    AFTER( "after" ),
+    BEFORE( "before" ),
+    COINCIDES( "coincides" );
 
     private final String operator;
 
@@ -35,23 +38,13 @@ public enum Operator {
     }
 
     public static Operator resolve( final String operator ) {
-        if ( operator.equals( "==" ) ) {
-            return EQUALS;
-        } else if ( operator.equals( "!=" ) ) {
-            return NOT_EQUALS;
-        } else if ( operator.equals( "<" ) ) {
-            return LESS_THAN;
-        } else if ( operator.equals( "<=" ) ) {
-            return LESS_THAN_OR_EQUALS;
-        } else if ( operator.equals( ">" ) ) {
-            return GREATER_THAN;
-        } else if ( operator.equals( ">=" ) ) {
-            return GREATER_THAN_OR_EQUALS;
-        } else if ( operator.equals( "in" ) ) {
-            return IN;
-        } else {
-            return NONE;
+        for (Operator enumOperator : Operator.values()) {
+            if ( enumOperator.operator.equals( operator ) ) {
+                return enumOperator;
+            }
         }
+
+        return NONE;
     }
 
     @Override

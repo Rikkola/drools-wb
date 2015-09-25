@@ -91,7 +91,7 @@ public class ComparableConditionInspectorSubsumptionTest {
             { "==", 0.5d, "<=", -1.5d, false, false },
             { "==", 0.5d, "<=", -10.5d, false, false },
 
-            { "==", 0.5d, "!=", 1.5d, false, true },
+            { "==", 0.5d, "!=", 1.5d, true, false },
             { "==", 0.5d, ">", -1.5d, false, true },
             { "==", 0.5d, ">", -10.5d, false, true },
             { "==", 0.5d, ">=", 0.5d, false, true },

@@ -26,18 +26,18 @@ import org.drools.workbench.screens.guided.dtable.client.widget.analysis.checks.
 import org.drools.workbench.screens.guided.dtable.client.widget.analysis.checks.util.Redundancy;
 
 public class StringConditionInspector
-        extends ConditionInspector {
+        extends ComparableConditionInspector<String> {
 
     private final List<String> values = new ArrayList<String>();
-    private final Operator operator;
 
     public StringConditionInspector( final Pattern52 pattern,
                                      final String factField,
                                      final String value,
                                      final String operator ) {
         super( pattern,
-               factField );
-        this.operator = Operator.resolve( operator );
+               factField,
+               value,
+               operator );
 
         switch ( this.operator ) {
             case IN:
@@ -105,18 +105,23 @@ public class StringConditionInspector
                     case EQUALS:
                         switch ( ( (StringConditionInspector) other ).getOperator() ) {
                             case NOT_EQUALS:
-                                return !( (StringConditionInspector) other ).values.contains( values.get( 0 ) );
+                                return !valuesContains( (StringConditionInspector) other );
                             default:
-                                return ( (StringConditionInspector) other ).values.contains( values.get( 0 ) );
+                                return valuesContains( (StringConditionInspector) other );
                         }
                     case NOT_EQUALS:
-                        return !( (StringConditionInspector) other ).values.contains( values.get( 0 ) );
+                        switch (((StringConditionInspector) other).getOperator()) {
+                            case NOT_EQUALS:
+                                return valuesContains( (StringConditionInspector) other );
+                            default:
+                                return !valuesContains( (StringConditionInspector) other );
+                        }
                     case IN:
                         switch ( ( (StringConditionInspector) other ).getOperator() ) {
                             case EQUALS:
-                                return values.contains( ( (StringConditionInspector) other ).getValues().get( 0 ) );
+                                return valuesContains( ((StringConditionInspector) other).getValues().get( 0 ) );
                             case NOT_EQUALS:
-                                return !values.contains( ( (StringConditionInspector) other ).getValues().get( 0 ) );
+                                return !valuesContains( ((StringConditionInspector) other).getValues().get( 0 ) );
                             case IN:
                                 if ( containsAny( ( (StringConditionInspector) other ).values ) ) {
                                     return true;
@@ -126,7 +131,15 @@ public class StringConditionInspector
             }
         }
 
-        return false;
+        return super.overlaps( other );
+    }
+
+    private boolean valuesContains( String value ) {
+        return values.contains( value );
+    }
+
+    private boolean valuesContains( StringConditionInspector other ) {
+        return other.values.contains( values.get( 0 ) );
     }
 
     private boolean containsAny( final List<String> otherValues ) {

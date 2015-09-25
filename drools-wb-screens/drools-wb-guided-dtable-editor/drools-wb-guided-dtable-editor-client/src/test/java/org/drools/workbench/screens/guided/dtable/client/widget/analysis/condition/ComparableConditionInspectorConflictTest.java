@@ -16,19 +16,19 @@
 
 package org.drools.workbench.screens.guided.dtable.client.widget.analysis.condition;
 
-import static java.lang.String.format;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
 import org.drools.workbench.models.guided.dtable.shared.model.Pattern52;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.junit.runner.RunWith;
+
+import static java.lang.String.format;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith( Parameterized.class )
 public class ComparableConditionInspectorConflictTest {
@@ -44,8 +44,10 @@ public class ComparableConditionInspectorConflictTest {
         ComparableConditionInspector a = getCondition( value1, operator1 );
         ComparableConditionInspector b = getCondition( value2, operator2 );
 
-        assertEquals( getAssertDescription(a, b, conflictExpected), conflictExpected, a.conflicts( b ) );
-        assertEquals( getAssertDescription(b, a, conflictExpected), conflictExpected, b.conflicts( a ) );
+        assertEquals( getAssertDescriptionConflict( a, b, conflictExpected ), conflictExpected, a.conflicts( b ) );
+        assertEquals( getAssertDescriptionConflict( a, b, conflictExpected ), conflictExpected, a.conflicts( b ) );
+        assertEquals( getAssertDescriptionOverlap( a, b, !conflictExpected ), !conflictExpected, a.overlaps( b ) );
+        assertEquals( getAssertDescriptionOverlap( b, a, !conflictExpected ), !conflictExpected, b.overlaps( a ) );
     }
 
     public ComparableConditionInspectorConflictTest( String operator1,
@@ -60,93 +62,101 @@ public class ComparableConditionInspectorConflictTest {
         this.conflictExpected = conflictExpected;
     }
 
-    @Parameters
-    public static Collection<Object[]> testData() {
-        return Arrays.asList( new Object[][] {
-            // op1, val1, op2, val2, conflicts
-            { "==", 0.5d, "==", 0.5d, false },
-            { "!=", 0.5d, "!=", 0.5d, false },
-            { ">", 0.5d, ">", 0.5d, false },
-            { ">=", 0.5d, ">=", 0.5d, false },
-            { "<", 0.5d, "<", 0.5d, false },
-            { "<=", 0.5d, "<=", 0.5d, false },
-
-            { "==", 0.5d, "!=", 1.5d, false },
-            { "==", 0.5d, ">", -1.5d, false },
-            { "==", 0.5d, ">", -10.5d, false },
-            { "==", 0.5d, ">=", 0.5d, false },
-            { "==", 0.5d, ">=", -10.5d, false },
-            { "==", 0.5d, "<", 1.5d, false },
-            { "==", 0.5d, "<", 10.5d, false },
-            { "==", 0.5d, "<=", 0.5d, false },
-            { "==", 0.5d, "<=", 10.5d, false },
-
-            { "==", 0.5d, "==", 1.5d, true },
-            { "==", 0.5d, "!=", 0.5d, true },
-            { "==", 0.5d, ">", 0.5d, true },
-            { "==", 0.5d, ">", 10.5d, true },
-            { "==", 0.5d, ">=", 1.5d, true },
-            { "==", 0.5d, ">=", 10.5d, true },
-            { "==", 0.5d, "<", 0.5d, true },
-            { "==", 0.5d, "<", -10.5d, true },
-            { "==", 0.5d, "<=", -1.5d, true },
-            { "==", 0.5d, "<=", -10.5d, true },
-
-            { "!=", 0.5d, "!=", 1.5d, false },
-            { "!=", 0.5d, ">", -1.5d, false },
-            { "!=", 0.5d, ">=", 0.5d, false },
-            { "!=", 0.5d, "<", 1.5d, false },
-            { "!=", 0.5d, "<=", 0.5d, false },
-
-            { ">", 0.5d, ">", 1.5d, false },
-            { ">", 0.5d, ">=", 0.5d, false },
-            { ">", 0.5d, "<", 2.5d, false },
-            { ">", 0.5d, "<", 10.5d, false },
-            { ">", 0.5d, "<=", 1.5d, false },
-            { ">", 0.5d, "<=", 10.5d, false },
-
-            { ">", 0.5d, "<", -1.5d, true },
-            { ">", 0.5d, "<", 0.5d, true },
-            { ">", 0.5d, "<", 1.5d, true },
-            { ">", 0.5d, "<=", -2.5d, true },
-            { ">", 0.5d, "<=", -1.5d, true },
-            { ">", 0.5d, "<=", 0.5d, true },
-
-            { ">=", 0.5d, ">=", 1.5d, false },
-            { ">=", 0.5d, "<", 1.5d, false },
-            { ">=", 0.5d, "<", 10.5d, false },
-            { ">=", 0.5d, "<=", 0.5d, false },
-            { ">=", 0.5d, "<=", 10.5d, false },
-
-            { ">=", 0.5d, "<", -2.5d, true },
-            { ">=", 0.5d, "<", -1.5d, true },
-            { ">=", 0.5d, "<", 0.5d, true },
-            { ">=", 0.5d, "<=", -3.5d, true },
-            { ">=", 0.5d, "<=", -2.5d, true },
-            { ">=", 0.5d, "<=", -1.5d, true },
-
-            { "<", 0.5d, "<", 1.5d, false },
-            { "<", 0.5d, "<=", 0.5d, false },
-
-            { "<=", 0.5d, "<=", 1.5d, false },
-
-            // operators only allowed for Date...
-            { "after", new Date(0), "after", new Date(0), false },
-            { "before", new Date(0), "before", new Date(0), false },
-            { "coincides", new Date(0), "coincides", new Date(0), false },
-
-            { "after", new Date(10000), "before", new Date(20000), false },
-            { "after", new Date(20000), "before", new Date(10000), false },
-        } );
-    }
-
-    private String getAssertDescription( ComparableConditionInspector a,
-                                         ComparableConditionInspector b,
-                                         boolean conflictExpected ) {
+    private String getAssertDescriptionConflict( ComparableConditionInspector a,
+                                                 ComparableConditionInspector b,
+                                                 boolean conflictExpected ) {
         return format( "Expected condition '%s' %sto conflict with condition '%s':",
                        a.toHumanReadableString(),
                        conflictExpected ? "" : "not ",
                        b.toHumanReadableString() );
+    }
+
+    private String getAssertDescriptionOverlap( ComparableConditionInspector a,
+                                                ComparableConditionInspector b,
+                                                boolean conflictExpected ) {
+        return format( "Expected condition '%s' %sto overlap with condition '%s':",
+                       a.toHumanReadableString(),
+                       conflictExpected ? "" : "not ",
+                       b.toHumanReadableString() );
+    }
+
+    @Parameters
+    public static Collection<Object[]> testData() {
+        return Arrays.asList( new Object[][]{
+                // op1, val1, op2, val2, conflicts
+                {"==", 0.5d, "==", 0.5d, false},
+                {"!=", 0.5d, "!=", 0.5d, false},
+                {">", 0.5d, ">", 0.5d, false},
+                {">=", 0.5d, ">=", 0.5d, false},
+                {"<", 0.5d, "<", 0.5d, false},
+                {"<=", 0.5d, "<=", 0.5d, false},
+
+                {"==", 0.5d, "!=", 1.5d, false},
+                {"==", 0.5d, ">", -1.5d, false},
+                {"==", 0.5d, ">", -10.5d, false},
+                {"==", 0.5d, ">=", 0.5d, false},
+                {"==", 0.5d, ">=", -10.5d, false},
+                {"==", 0.5d, "<", 1.5d, false},
+                {"==", 0.5d, "<", 10.5d, false},
+                {"==", 0.5d, "<=", 0.5d, false},
+                {"==", 0.5d, "<=", 10.5d, false},
+
+                {"==", 0.5d, "==", 1.5d, true},
+                {"==", 0.5d, "!=", 0.5d, true},
+                {"==", 0.5d, ">", 0.5d, true},
+                {"==", 0.5d, ">", 10.5d, true},
+                {"==", 0.5d, ">=", 1.5d, true},
+                {"==", 0.5d, ">=", 10.5d, true},
+                {"==", 0.5d, "<", 0.5d, true},
+                {"==", 0.5d, "<", -10.5d, true},
+                {"==", 0.5d, "<=", -1.5d, true},
+                {"==", 0.5d, "<=", -10.5d, true},
+
+                {"!=", 0.5d, "!=", 1.5d, false},
+                {"!=", 0.5d, ">", -1.5d, false},
+                {"!=", 0.5d, ">=", 0.5d, false},
+                {"!=", 0.5d, "<", 1.5d, false},
+                {"!=", 0.5d, "<=", 0.5d, false},
+
+                {">", 0.5d, ">", 1.5d, false},
+                {">", 0.5d, ">=", 0.5d, false},
+                {">", 0.5d, "<", 2.5d, false},
+                {">", 0.5d, "<", 10.5d, false},
+                {">", 0.5d, "<=", 1.5d, false},
+                {">", 0.5d, "<=", 10.5d, false},
+
+                {">", 0.5d, "<", -1.5d, true},
+                {">", 0.5d, "<", 0.5d, true},
+                {">", 0.5d, "<", 1.5d, false},
+                {">", 0.5d, "<=", -2.5d, true},
+                {">", 0.5d, "<=", -1.5d, true},
+                {">", 0.5d, "<=", 0.5d, true},
+
+                {">=", 0.5d, ">=", 1.5d, false},
+                {">=", 0.5d, "<", 1.5d, false},
+                {">=", 0.5d, "<", 10.5d, false},
+                {">=", 0.5d, "<=", 0.5d, false},
+                {">=", 0.5d, "<=", 10.5d, false},
+
+                {">=", 0.5d, "<", -2.5d, true},
+                {">=", 0.5d, "<", -1.5d, true},
+                {">=", 0.5d, "<", 0.5d, true},
+                {">=", 0.5d, "<=", -3.5d, true},
+                {">=", 0.5d, "<=", -2.5d, true},
+                {">=", 0.5d, "<=", -1.5d, true},
+
+                {"<", 0.5d, "<", 1.5d, false},
+                {"<", 0.5d, "<=", 0.5d, false},
+
+                {"<=", 0.5d, "<=", 1.5d, false},
+
+                // operators only allowed for Date...
+                {"after", new Date( 0 ), "after", new Date( 0 ), false},
+                {"before", new Date( 0 ), "before", new Date( 0 ), false},
+
+                {"after", new Date( 10000 ), "before", new Date( 20000 ), false},
+                {"after", new Date( 20000 ), "before", new Date( 10000 ), true}
+        } );
     }
 
     private ComparableConditionInspector getCondition( Comparable value,

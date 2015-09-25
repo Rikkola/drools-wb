@@ -39,7 +39,7 @@ public class StringConditionInspectorConflictOverlapTest {
     private final boolean conflictExpected;
 
     @Test
-    public void parametrizedCoflictTest() {
+    public void parametrizedConflictTest() {
         StringConditionInspector a = getCondition( value1, operator1 );
         StringConditionInspector b = getCondition( value2, operator2 );
 
