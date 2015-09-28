@@ -27,6 +27,11 @@ public enum Operator {
     NOT_EQUALS( "!=" ),
 
     IN( "in" ),
+    NOT_IN( "not in" ),
+
+    MATCHES("matches"),
+    SOUNDSLIKE("soundslike"),
+
     AFTER( "after" ),
     BEFORE( "before" ),
     COINCIDES( "coincides" );

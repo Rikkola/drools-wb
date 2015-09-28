@@ -31,9 +31,12 @@ public class OperatorTest {
         assertEquals( Operator.LESS_THAN_OR_EQUALS, Operator.resolve( "<=" ) );
         assertEquals( Operator.NOT_EQUALS, Operator.resolve( "!=" ) );
         assertEquals( Operator.IN, Operator.resolve( "in" ) );
+        assertEquals( Operator.NOT_IN, Operator.resolve( "not in" ) );
         assertEquals( Operator.AFTER, Operator.resolve( "after" ) );
         assertEquals( Operator.BEFORE, Operator.resolve( "before" ) );
         assertEquals( Operator.COINCIDES, Operator.resolve( "coincides" ) );
+        assertEquals( Operator.MATCHES, Operator.resolve( "matches" ) );
+        assertEquals( Operator.SOUNDSLIKE, Operator.resolve( "soundslike" ) );
 
     }
 }

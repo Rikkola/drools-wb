@@ -40,6 +40,7 @@ public class StringConditionInspector
                operator );
 
         switch ( this.operator ) {
+            case NOT_IN:
             case IN:
                 for ( String item : value.split( "," ) ) {
                     values.add( item.trim() );
@@ -98,32 +99,49 @@ public class StringConditionInspector
     @Override
     public boolean overlaps( Object other ) {
         if ( other instanceof StringConditionInspector ) {
-            if ( !( (StringConditionInspector) other ).hasValue() ) {
+            StringConditionInspector otherInspector = (StringConditionInspector) other;
+
+            if(operator.equals( otherInspector.getOperator() )
+                    ){
+
+            }
+
+            if ( !otherInspector.hasValue() ) {
                 return false;
             } else {
+
                 switch ( operator ) {
-                    case EQUALS:
-                        switch ( ( (StringConditionInspector) other ).getOperator() ) {
-                            case NOT_EQUALS:
-                                return !valuesContains( (StringConditionInspector) other );
+                    case MATCHES:
+                        switch (otherInspector.getOperator()) {
+                            case MATCHES:
+                                return otherInspector.containsAll( values );
                             default:
-                                return valuesContains( (StringConditionInspector) other );
+                                return super.overlaps( other );
                         }
-                    case NOT_EQUALS:
-                        switch (((StringConditionInspector) other).getOperator()) {
+                    case EQUALS:
+                        switch (otherInspector.getOperator()) {
                             case NOT_EQUALS:
-                                return valuesContains( (StringConditionInspector) other );
+                                return !otherInspector.valuesContains( values.get( 0 ) );
                             default:
-                                return !valuesContains( (StringConditionInspector) other );
+                                return otherInspector.valuesContains( values.get( 0 ) );
+                        }
+                    case NOT_IN:
+                        return otherInspector.containsAll( values );
+                    case NOT_EQUALS:
+                        switch (otherInspector.getOperator()) {
+                            case NOT_EQUALS:
+                                return otherInspector.valuesContains( values.get( 0 ) );
+                            default:
+                                return !otherInspector.valuesContains( values.get( 0 ) );
                         }
                     case IN:
-                        switch ( ( (StringConditionInspector) other ).getOperator() ) {
+                        switch (otherInspector.getOperator()) {
                             case EQUALS:
-                                return valuesContains( ((StringConditionInspector) other).getValues().get( 0 ) );
+                                return valuesContains( otherInspector.getValues().get( 0 ) );
                             case NOT_EQUALS:
-                                return !valuesContains( ((StringConditionInspector) other).getValues().get( 0 ) );
+                                return !valuesContains( otherInspector.getValues().get( 0 ) );
                             case IN:
-                                if ( containsAny( ( (StringConditionInspector) other ).values ) ) {
+                                if ( containsAny( otherInspector.values ) ) {
                                     return true;
                                 }
                         }
@@ -138,13 +156,22 @@ public class StringConditionInspector
         return values.contains( value );
     }
 
-    private boolean valuesContains( StringConditionInspector other ) {
-        return other.values.contains( values.get( 0 ) );
+    private boolean containsAll( final List<String> otherValues ) {
+        if ( values.isEmpty() || otherValues.isEmpty() ) {
+            return false;
+        } else {
+            for (String otherValue : otherValues) {
+                if ( !values.contains( otherValue ) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     private boolean containsAny( final List<String> otherValues ) {
-        for ( String thisValue : values ) {
-            for ( String otherValue : otherValues ) {
+        for (String thisValue : values) {
+            for (String otherValue : otherValues) {
                 if ( thisValue.equals( otherValue ) ) {
                     return true;
                 }
