@@ -103,9 +103,9 @@ public class StringConditionInspectorConflictOverlapTest {
 
                 {"==", "a", "!=", "a", true, false},
                 {"==", "a", ">", "a", true, false},
-                {"==", "a", ">=", "b", true, false},
+                {"==", "a", ">=", "b", false, false},
                 {"==", "a", "<", "a", true, false},
-                {"==", "a", "<=", " ", true, false},
+                {"==", "a", "<=", " ", false, false},
                 {"==", "a", "in", "b,c,d", true, false},
                 {"==", "a", "not in", "a,b", true, false},
                 {"==", "a", "matches", "b", true, false},
@@ -137,11 +137,11 @@ public class StringConditionInspectorConflictOverlapTest {
 
                 {">", "a", "<", "a", true, false},
                 {">", "a", "<=", "a", true, false},
-                {">", "a", "in", "0,1,A,B,a", true, false},
+                {">", "a", "in", "0,1,A,B,a", false, false},
                 {">", "a", "matches", "a", true, false},
-                {">", "a", "soundslike", "", true, false},
+                {">", "a", "soundslike", "", false, false},
 
-                {">=", "a", ">=", "b", false, false},
+                {">=", "a", ">=", "b", false, true},
                 {">=", "a", "<", "b", false, false},
                 {">=", "a", "<=", "a", false, true},
                 {">=", "a", "in", "a", false, true},
@@ -151,8 +151,8 @@ public class StringConditionInspectorConflictOverlapTest {
 
                 {">=", "a", "<", " ", false, false},
                 {">=", "a", "<=", " ", false, false},
-                {">=", "a", "in", "0,1,A,B", true, false},
-                {">=", "a", "matches", "A", true, false},
+                {">=", "a", "in", "0,1,A,B", false, false},
+                {">=", "a", "matches", "A", false, false},
                 {">=", "a", "soundslike", "", false, false},
 
                 {"<", "a", "<", "b", false, true},
@@ -162,19 +162,19 @@ public class StringConditionInspectorConflictOverlapTest {
                 {"<", "a", "matches", "A", false, false},
                 {"<", "a", "soundslike", "", false, false},
 
-                {"<", "a", "in", "b,c,d", true, false},
-                {"<", "a", "matches", "b", true, false},
-                {"<", "a", "soundslike", "b", true, false},
+                {"<", "a", "in", "b,c,d", false, false},
+                {"<", "a", "matches", "b", false, false},
+                {"<", "a", "soundslike", "b", false, false},
 
                 {"<=", "a", "<=", "b", false, true},
                 {"<=", "a", "in", "A,B,a,b", false, true},
                 {"<=", "a", "not in", "b,c,d", false, true},
-                {"<=", "a", "matches", "A", false, true},
-                {"<=", "a", "soundslike", "", false, true},
+                {"<=", "a", "matches", "A", false, false},
+                {"<=", "a", "soundslike", "", false, false},
 
-                {"<=", "a", "in", "b,c,d", true, false},
-                {"<=", "a", "matches", "b", true, false},
-                {"<=", "a", "soundslike", "b", true, false},
+                {"<=", "a", "in", "b,c,d", false, false},
+                {"<=", "a", "matches", "b", false, false},
+                {"<=", "a", "soundslike", "b", false, false},
 
                 {"in", "a,b", "in", "b,c,d", false, true},
                 {"in", "a,b", "not in", "b,c,d", false, true},

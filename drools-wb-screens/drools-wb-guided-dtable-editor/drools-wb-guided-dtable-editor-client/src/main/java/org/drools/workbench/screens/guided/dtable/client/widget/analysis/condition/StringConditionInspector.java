@@ -87,12 +87,13 @@ public class StringConditionInspector
             if ( (doesNotContainAll( ((StringConditionInspector) other).getValues() )
                     || ((StringConditionInspector) other).doesNotContainAll( getValues() ))
                     &&
-                    (((StringConditionInspector) other).getOperator().equals( Operator.LESS_THAN )
-                            || operator.equals( Operator.LESS_THAN )
-                            || ((StringConditionInspector) other).getOperator().equals( Operator.GREATER_THAN )
-                            || operator.equals( Operator.GREATER_THAN )) ) {
+                    (eitherOperatorIs( (StringConditionInspector) other, Operator.LESS_THAN )
+                            || eitherOperatorIs( (StringConditionInspector) other, Operator.LESS_THAN_OR_EQUALS )
+                            || eitherOperatorIs( (StringConditionInspector) other, Operator.GREATER_THAN )
+                            || eitherOperatorIs( (StringConditionInspector) other, Operator.GREATER_THAN_OR_EQUALS )) ) {
                 return false;
             }
+
 
             if ( operatorsAre( ((StringConditionInspector) other),
                                Operator.NOT_EQUALS ) ) {
@@ -100,7 +101,13 @@ public class StringConditionInspector
             }
         }
 
-        return !overlaps( other );
+        boolean conflicts = !overlaps( other );
+        return conflicts;
+    }
+
+    private boolean eitherOperatorIs( StringConditionInspector other, Operator operator ) {
+        return other.getOperator().equals( operator )
+                || this.operator.equals( operator );
     }
 
     @Override
@@ -110,6 +117,8 @@ public class StringConditionInspector
 
             if ( operatorsAre( otherInspector, Operator.LESS_THAN )
                     || (operatorsAre( otherInspector, Operator.GREATER_THAN ))
+                    || (operatorsAre( otherInspector, Operator.LESS_THAN_OR_EQUALS ))
+                    || (operatorsAre( otherInspector, Operator.GREATER_THAN_OR_EQUALS ))
                     || operatorsAre( otherInspector, Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUALS )
                     || operatorsAre( otherInspector, Operator.GREATER_THAN, Operator.GREATER_THAN_OR_EQUALS ) ) {
                 return true;
@@ -330,7 +339,7 @@ public class StringConditionInspector
 
     private boolean hasAValueSetInList() {
         for ( String value : values ) {
-            if ( value != null && !value.isEmpty() ) {
+            if ( value != null && !value.trim().isEmpty() ) {
                 return true;
             }
         }
