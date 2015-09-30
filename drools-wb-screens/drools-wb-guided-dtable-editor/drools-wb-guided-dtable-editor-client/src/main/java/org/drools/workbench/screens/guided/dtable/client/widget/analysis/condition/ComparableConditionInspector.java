@@ -166,6 +166,11 @@ public class ComparableConditionInspector<T extends Comparable<T>>
                                 return covers( anotherPoint.getValue() )
                                         || anotherPoint.covers( getValue() );
                         }
+                    case IN:
+                        return anotherPoint.covers( getValue() );
+                    case NOT_IN:
+                        boolean b = anotherPoint.covers( getValue() );
+                        return b;
                     default:
                         return false;
                 }
@@ -281,23 +286,23 @@ public class ComparableConditionInspector<T extends Comparable<T>>
         }
     }
 
-    private boolean valueIsGreaterThanOrEqualTo( final Comparable<T> otherValue ) {
+    protected boolean valueIsGreaterThanOrEqualTo( final Comparable<T> otherValue ) {
         return valueIsEqualTo( otherValue ) || valueIsGreaterThan( otherValue );
     }
 
-    private boolean valueIsLessThanOrEqualTo( final Comparable<T> otherValue ) {
+    protected boolean valueIsLessThanOrEqualTo( final Comparable<T> otherValue ) {
         return valueIsEqualTo( otherValue ) || valueIsLessThan( otherValue );
     }
 
-    private boolean valueIsGreaterThan( final Comparable<T> otherValue ) {
+    protected boolean valueIsGreaterThan( final Comparable<T> otherValue ) {
         return otherValue.compareTo( getValue() ) > 0;
     }
 
-    private boolean valueIsLessThan( final Comparable<T> otherValue ) {
+    protected boolean valueIsLessThan( final Comparable<T> otherValue ) {
         return otherValue.compareTo( getValue() ) < 0;
     }
 
-    private boolean valueIsEqualTo( final Comparable<T> otherValue ) {
+    protected boolean valueIsEqualTo( final Comparable<T> otherValue ) {
         return otherValue.compareTo( getValue() ) == 0;
     }
 

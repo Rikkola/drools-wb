@@ -77,23 +77,30 @@ public class StringConditionInspector
         if ( this.equals( other ) ) {
             return false;
         }
+
         if ( other instanceof StringConditionInspector ) {
 
             if ( !hasValue() || !( (StringConditionInspector) other ).hasValue() ) {
                 return false;
             }
 
-            switch ( ( (StringConditionInspector) other ).getOperator() ) {
-                case NOT_EQUALS:
-                    switch ( operator ) {
-                        case NOT_EQUALS:
-                            return false;
-                    }
-                default:
-                    return !overlaps( other );
+            if ( (doesNotContainAll( ((StringConditionInspector) other).getValues() )
+                    || ((StringConditionInspector) other).doesNotContainAll( getValues() ))
+                    &&
+                    (((StringConditionInspector) other).getOperator().equals( Operator.LESS_THAN )
+                            || operator.equals( Operator.LESS_THAN )
+                            || ((StringConditionInspector) other).getOperator().equals( Operator.GREATER_THAN )
+                            || operator.equals( Operator.GREATER_THAN )) ) {
+                return false;
+            }
+
+            if ( operatorsAre( ((StringConditionInspector) other),
+                               Operator.NOT_EQUALS ) ) {
+                return false;
             }
         }
-        return false;
+
+        return !overlaps( other );
     }
 
     @Override
@@ -101,9 +108,23 @@ public class StringConditionInspector
         if ( other instanceof StringConditionInspector ) {
             StringConditionInspector otherInspector = (StringConditionInspector) other;
 
-            if(operator.equals( otherInspector.getOperator() )
-                    ){
+            if ( operatorsAre( otherInspector, Operator.LESS_THAN )
+                    || (operatorsAre( otherInspector, Operator.GREATER_THAN ))
+                    || operatorsAre( otherInspector, Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUALS )
+                    || operatorsAre( otherInspector, Operator.GREATER_THAN, Operator.GREATER_THAN_OR_EQUALS ) ) {
+                return true;
+            }
 
+            if ( value.equals( otherInspector.getValue() )
+                    && (operator.equals( otherInspector.getOperator() )) ) {
+                return true;
+            }
+
+            if ( ((StringConditionInspector) other).getOperator().equals( Operator.LESS_THAN )
+                    || operator.equals( Operator.LESS_THAN )
+                    || ((StringConditionInspector) other).getOperator().equals( Operator.GREATER_THAN )
+                    || operator.equals( Operator.GREATER_THAN ) ) {
+                return false;
             }
 
             if ( !otherInspector.hasValue() ) {
@@ -112,44 +133,117 @@ public class StringConditionInspector
 
                 switch ( operator ) {
                     case MATCHES:
+                    case SOUNDSLIKE:
+                    case EQUALS:
+                    case GREATER_THAN_OR_EQUALS:
+                    case LESS_THAN_OR_EQUALS:
                         switch (otherInspector.getOperator()) {
+                            case NOT_EQUALS:
+                                return !otherInspector.containsAll( values );
+                            case EQUALS:
                             case MATCHES:
+                            case SOUNDSLIKE:
                                 return otherInspector.containsAll( values );
+                            case IN:
+                                return otherInspector.valuesContains( values.get( 0 ) );
+                            case NOT_IN:
+                                return !otherInspector.valuesContains( values.get( 0 ) );
                             default:
                                 return super.overlaps( other );
                         }
-                    case EQUALS:
-                        switch (otherInspector.getOperator()) {
-                            case NOT_EQUALS:
-                                return !otherInspector.valuesContains( values.get( 0 ) );
-                            default:
-                                return otherInspector.valuesContains( values.get( 0 ) );
-                        }
                     case NOT_IN:
-                        return otherInspector.containsAll( values );
+                        switch (otherInspector.getOperator()) {
+                            case EQUALS:
+                            case MATCHES:
+                            case SOUNDSLIKE:
+                                return !valuesContains( otherInspector.getValue() );
+                            case IN:
+                                return doesNotContainAll( otherInspector.getValues() );
+                            default:
+                                return !otherInspector.containsAll( values );
+                        }
                     case NOT_EQUALS:
                         switch (otherInspector.getOperator()) {
+                            case IN:
+                                return doesNotContainAll( ((StringConditionInspector) other).getValues() );
                             case NOT_EQUALS:
-                                return otherInspector.valuesContains( values.get( 0 ) );
+                                return !otherInspector.containsAll( values );
+//                            case EQUALS:
+//                            case MATCHES:
+//                            case SOUNDSLIKE:
+//                            case GREATER_THAN_OR_EQUALS:
+//                            case LESS_THAN_OR_EQUALS:
+//                                return otherInspector.valuesContains( values.get( 0 ) );
                             default:
                                 return !otherInspector.valuesContains( values.get( 0 ) );
                         }
                     case IN:
                         switch (otherInspector.getOperator()) {
                             case EQUALS:
+                            case MATCHES:
+                            case SOUNDSLIKE:
+                            case GREATER_THAN_OR_EQUALS:
+                            case LESS_THAN_OR_EQUALS:
                                 return valuesContains( otherInspector.getValues().get( 0 ) );
                             case NOT_EQUALS:
-                                return !valuesContains( otherInspector.getValues().get( 0 ) );
+                                return otherInspector.doesNotContainAll( getValues() );
+                            case NOT_IN:
+                                return doesNotContainAll( otherInspector.getValues() );
                             case IN:
-                                if ( containsAny( otherInspector.values ) ) {
-                                    return true;
-                                }
+                                return containsAny( otherInspector.values );
                         }
                 }
             }
         }
 
         return super.overlaps( other );
+    }
+
+    private boolean operatorsAre( final StringConditionInspector otherInspector,
+                                  final Operator operator ) {
+        return this.operator.equals( operator ) && otherInspector.getOperator().equals( operator );
+    }
+
+    private boolean operatorsAre( final StringConditionInspector otherInspector,
+                                  final Operator a,
+                                  final Operator b ) {
+        return (this.operator.equals( a ) && otherInspector.getOperator().equals( b ))
+                || (this.operator.equals( b ) && otherInspector.getOperator().equals( a ));
+    }
+
+    @Override
+    public boolean covers( Comparable<String> otherValue ) {
+
+        switch (operator) {
+            //TODO: waaayyyy too simple
+            case IN:
+                return true;
+            case NOT_IN:
+                return !valuesContains( otherValue.toString() );
+            default:
+                return super.covers( otherValue );
+        }
+
+    }
+
+    protected boolean valueIsGreaterThanOrEqualTo( final Comparable<String> otherValue ) {
+        return valueIsEqualTo( otherValue );
+    }
+
+    protected boolean valueIsLessThanOrEqualTo( final Comparable<String> otherValue ) {
+        return valueIsEqualTo( otherValue );
+    }
+
+    protected boolean valueIsGreaterThan( final Comparable<String> otherValue ) {
+        return false;
+    }
+
+    protected boolean valueIsLessThan( final Comparable<String> otherValue ) {
+        return false;
+    }
+
+    protected boolean valueIsEqualTo( final Comparable<String> otherValue ) {
+        return valuesContains( otherValue.toString() );
     }
 
     private boolean valuesContains( String value ) {
@@ -167,6 +261,15 @@ public class StringConditionInspector
             }
             return true;
         }
+    }
+
+    private boolean doesNotContainAll( final List<String> otherValues ) {
+        for (String otherValue : otherValues) {
+            if ( !values.contains( otherValue ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean containsAny( final List<String> otherValues ) {
