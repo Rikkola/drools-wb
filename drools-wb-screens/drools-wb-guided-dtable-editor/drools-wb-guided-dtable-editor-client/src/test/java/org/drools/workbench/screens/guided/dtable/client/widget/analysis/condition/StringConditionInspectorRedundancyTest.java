@@ -126,16 +126,8 @@ public class StringConditionInspectorRedundancyTest {
 
             { "not in", "a,b", "not in", "b,a", true },
 
-            /*
-            peculiar fun with lexico... String ordering :)
-
-            fact 1: String is an array of chars
-            fact 2: char is a natural number
-            => a String is a sequence of natural numbers, which, for simplicity sake, can be considered a natural number as well
-            => the folowing two tests should pass, as the conditions are basically comparing two natural numbers
-            */
-            { ">", "a", ">=", "b", true },
-            { "<", "b", "<=", "a", true },
+            { ">", "a", ">=", "b", false },
+            { "<", "b", "<=", "a", false },
         } );
     }
 

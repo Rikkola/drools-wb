@@ -39,15 +39,19 @@ public class StringConditionInspector
                value,
                operator );
 
-        switch ( this.operator ) {
-            case NOT_IN:
-            case IN:
-                for ( String item : value.split( "," ) ) {
-                    values.add( item.trim() );
-                }
-                break;
-            default:
-                values.add( value );
+        if ( operator.equals( "== null" ) || operator.equals( "!= null" ) ) {
+            values.add( "null" );
+        } else {
+            switch (this.operator) {
+                case NOT_IN:
+                case IN:
+                    for (String item : value.split( "," )) {
+                        values.add( item.trim() );
+                    }
+                    break;
+                default:
+                    values.add( value );
+            }
         }
     }
 
@@ -297,20 +301,69 @@ public class StringConditionInspector
         if ( other instanceof StringConditionInspector ) {
 
             if ( ( (StringConditionInspector) other ).getOperator().equals( operator ) ) {
-                return Redundancy.subsumes( getValues(),
-                                            ( (StringConditionInspector) other ).getValues() );
-            } else if ( operator.equals( Operator.IN ) && ( (StringConditionInspector) other ).getOperator().equals( Operator.EQUALS ) ) {
-                return getValues().contains( ( (StringConditionInspector) other ).getValues().get( 0 ) );
-            } else if ( operator.equals( Operator.IN ) && ( (StringConditionInspector) other ).getOperator().equals( Operator.NOT_EQUALS ) ) {
-                return !getValues().contains( ( (StringConditionInspector) other ).getValues().get( 0 ) );
-            } else if ( operator.equals( Operator.NOT_EQUALS ) && ( (StringConditionInspector) other ).getOperator().equals( Operator.IN ) ) {
-                return !getValues().contains( ( (StringConditionInspector) other ).getValues().get( 0 ) );
+                boolean subsumes = Redundancy.subsumes( getValues(),
+                                                        ((StringConditionInspector) other).getValues() );
+                return subsumes;
             }
 
-            return false;
-        } else {
-            return false;
+            switch (operator) {
+                case EQUALS:
+                case MATCHES:
+                case SOUNDSLIKE:
+                case LESS_THAN_OR_EQUALS:
+                case GREATER_THAN_OR_EQUALS:
+
+                    if ( operatorsAre( (StringConditionInspector) other, Operator.LESS_THAN_OR_EQUALS )
+                            || operatorsAre( (StringConditionInspector) other, Operator.GREATER_THAN_OR_EQUALS )
+                            || operatorsAre( (StringConditionInspector) other, Operator.LESS_THAN_OR_EQUALS, Operator.LESS_THAN )
+                            || operatorsAre( (StringConditionInspector) other, Operator.GREATER_THAN_OR_EQUALS, Operator.GREATER_THAN ) ) {
+                        return getValue().equals( ((StringConditionInspector) other).getValue() );
+                    } else {
+                        switch (((StringConditionInspector) other).getOperator()) {
+                            case IN:
+                            case EQUALS:
+                            case MATCHES:
+                            case SOUNDSLIKE:
+                                return getValue().equals( ((StringConditionInspector) other).getValue() );
+                        }
+                    }
+                    break;
+                case IN:
+                    switch (((StringConditionInspector) other).getOperator()) {
+                        case EQUALS:
+                        case MATCHES:
+                        case SOUNDSLIKE:
+                            return getValues().contains( ((StringConditionInspector) other).getValues().get( 0 ) );
+                    }
+
+                    break;
+                case NOT_IN:
+                    switch (((StringConditionInspector) other).getOperator()) {
+                        case IN:
+                        case EQUALS:
+                        case MATCHES:
+                        case SOUNDSLIKE:
+                            return !containsAll( ((StringConditionInspector) other).getValues() );
+                        case NOT_EQUALS:
+                            return getValues().contains( ((StringConditionInspector) other).getValue() );
+                    }
+                    break;
+                case NOT_EQUALS:
+                    switch (((StringConditionInspector) other).getOperator()) {
+                        case NOT_IN:
+                            return getValue().equals( ((StringConditionInspector) other).getValue() );
+                        case IN:
+                            return !((StringConditionInspector) other).getValues().contains( getValue() );
+                        case EQUALS:
+                        case MATCHES:
+                        case SOUNDSLIKE:
+                            return !getValue().equals( ((StringConditionInspector) other).getValue() );
+                    }
+                    break;
+            }
         }
+
+        return false;
     }
 
     @Override

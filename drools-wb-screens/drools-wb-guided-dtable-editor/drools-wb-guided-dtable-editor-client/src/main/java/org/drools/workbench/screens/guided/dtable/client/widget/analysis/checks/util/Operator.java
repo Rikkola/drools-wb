@@ -43,9 +43,15 @@ public enum Operator {
     }
 
     public static Operator resolve( final String operator ) {
-        for (Operator enumOperator : Operator.values()) {
-            if ( enumOperator.operator.equals( operator ) ) {
-                return enumOperator;
+        if ( operator.equals( "== null" ) ) {
+            return EQUALS;
+        } else if ( operator.equals( "!= null" ) ) {
+            return NOT_EQUALS;
+        } else {
+            for (Operator enumOperator : Operator.values()) {
+                if ( enumOperator.operator.equals( operator ) ) {
+                    return enumOperator;
+                }
             }
         }
 
