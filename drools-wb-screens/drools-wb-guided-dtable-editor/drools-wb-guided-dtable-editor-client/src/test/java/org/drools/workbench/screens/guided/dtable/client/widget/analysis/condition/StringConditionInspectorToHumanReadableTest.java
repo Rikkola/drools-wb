@@ -16,21 +16,20 @@
 
 package org.drools.workbench.screens.guided.dtable.client.widget.analysis.condition;
 
-import static java.lang.String.format;
-import org.drools.workbench.models.guided.dtable.shared.model.Pattern52;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.drools.workbench.models.datamodel.oracle.OperatorsOracle;
+import org.drools.workbench.models.guided.dtable.shared.model.Pattern52;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import static java.lang.String.format;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith( Parameterized.class )
 public class StringConditionInspectorToHumanReadableTest {
@@ -44,7 +43,13 @@ public class StringConditionInspectorToHumanReadableTest {
     public void testToHumanReadableString() {
         StringConditionInspector inspector = new StringConditionInspector( mock( Pattern52.class ), FIELD_NAME, VALUE, operator );
 
-        assertEquals( format( "%s %s %s", FIELD_NAME, operator, VALUE ), inspector.toHumanReadableString() );
+        if ( operator.equals( "!= null" ) ) {
+            assertEquals( format( "%s %s", FIELD_NAME, operator ), inspector.toHumanReadableString() );
+        } else if ( operator.equals( "== null" ) ) {
+            assertEquals( format( "%s %s", FIELD_NAME, operator ), inspector.toHumanReadableString() );
+        } else {
+            assertEquals( format( "%s %s %s", FIELD_NAME, operator, VALUE ), inspector.toHumanReadableString() );
+        }
     }
 
     public StringConditionInspectorToHumanReadableTest( String operator ) {

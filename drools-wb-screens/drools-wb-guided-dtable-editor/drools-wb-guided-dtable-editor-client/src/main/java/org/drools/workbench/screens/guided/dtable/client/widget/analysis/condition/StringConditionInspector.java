@@ -119,6 +119,10 @@ public class StringConditionInspector
         if ( other instanceof StringConditionInspector ) {
             StringConditionInspector otherInspector = (StringConditionInspector) other;
 
+            if ( value.isEmpty() || ((StringConditionInspector) other).getValue().isEmpty() ) {
+                return false;
+            }
+
             if ( operatorsAre( otherInspector, Operator.LESS_THAN )
                     || (operatorsAre( otherInspector, Operator.GREATER_THAN ))
                     || (operatorsAre( otherInspector, Operator.LESS_THAN_OR_EQUALS ))
