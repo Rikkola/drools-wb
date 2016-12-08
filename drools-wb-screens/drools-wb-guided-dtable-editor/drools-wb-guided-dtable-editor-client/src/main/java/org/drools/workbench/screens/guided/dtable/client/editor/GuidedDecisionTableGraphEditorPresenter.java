@@ -370,6 +370,7 @@ public class GuidedDecisionTableGraphEditorPresenter extends BaseGuidedDecisionT
         helper.createNewGuidedDecisionTable( contextPath,
                                              "",
                                              GuidedDecisionTable52.TableFormat.EXTENDED_ENTRY,
+                                             GuidedDecisionTable52.HitPolicy.NONE,
                                              view,
                                              ( path ) -> onOpenDocumentsInEditor( Collections.singletonList( path ) ) );
     }
