@@ -539,4 +539,9 @@ public interface GuidedDecisionTableConstants
     String FirstHitPolicy();
 
     String RuleOrderHitPolicy();
+
+    String None();
+
+    String HasPriorityOverRow();
+
 }
