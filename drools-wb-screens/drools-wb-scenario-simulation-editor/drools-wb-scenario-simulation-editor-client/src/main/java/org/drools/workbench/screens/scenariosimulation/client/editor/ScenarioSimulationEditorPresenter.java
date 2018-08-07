@@ -23,7 +23,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.drools.workbench.screens.scenariosimulation.client.factories.ScenarioSimulationViewProvider;
 import org.drools.workbench.screens.scenariosimulation.client.rightpanel.RightPanelPresenter;
 import org.drools.workbench.screens.scenariosimulation.client.type.ScenarioSimulationResourceType;
 import org.drools.workbench.screens.scenariosimulation.client.widgets.RightPanelMenuItem;
@@ -85,18 +84,21 @@ public class ScenarioSimulationEditorPresenter
 
     @Inject
     public ScenarioSimulationEditorPresenter(final Caller<ScenarioSimulationService> service,
+                                             final ScenarioSimulationView view,
                                              final ScenarioSimulationResourceType type,
                                              final ImportsWidgetPresenter importsWidget,
                                              final AsyncPackageDataModelOracleFactory oracleFactory,
                                              final PlaceManager placeManager) {
-        super();
-        this.view = newScenarioSimulationView();   // Indirection added for test-purpose
+        super(view);
+        this.view = view;
         this.baseView = view;
         this.service = service;
         this.type = type;
         this.importsWidget = importsWidget;
         this.oracleFactory = oracleFactory;
         this.placeManager = placeManager;
+
+        view.init(this); // TODO Test this
     }
 
     @OnStartup
@@ -168,6 +170,7 @@ public class ScenarioSimulationEditorPresenter
      */
     @Override
     protected void makeMenuBar() {
+        fileMenuBuilder.addNewTopLevelMenu(view.getRunScenarioMenuItem());
         super.makeMenuBar();
         addRightPanelMenuItem(fileMenuBuilder);
     }
@@ -198,11 +201,6 @@ public class ScenarioSimulationEditorPresenter
                      getNoSuchFileExceptionErrorCallback()).loadContent(versionRecordManager.getCurrentPath());
     }
 
-    // Needed by test
-    protected ScenarioSimulationView newScenarioSimulationView() {
-        return ScenarioSimulationViewProvider.newScenarioSimulationView();
-    }
-
     private RemoteCallback<ScenarioSimulationModelContent> getModelSuccessCallback() {
         return content -> {
             //Path is set to null when the Editor is closed (which can happen before async calls complete).
@@ -226,5 +224,10 @@ public class ScenarioSimulationEditorPresenter
 
     private void addRightPanelMenuItem(final FileMenuBuilder fileMenuBuilder) {
         fileMenuBuilder.addNewTopLevelMenu(rightPanelMenuItem);
+    }
+
+    public void onRunScenario() {
+        service.call().runScenario(versionRecordManager.getCurrentPath(),
+                                   model);
     }
 }

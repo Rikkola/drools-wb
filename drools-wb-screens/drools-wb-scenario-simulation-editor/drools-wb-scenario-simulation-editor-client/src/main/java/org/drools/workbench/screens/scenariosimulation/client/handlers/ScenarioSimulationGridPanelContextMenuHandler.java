@@ -20,25 +20,15 @@ import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HasHandlers;
-import org.drools.workbench.screens.scenariosimulation.client.widgets.ScenarioGridLayer;
-import org.drools.workbench.screens.scenariosimulation.client.widgets.ScenarioGridPanel;
 
 public class ScenarioSimulationGridPanelContextMenuHandler implements ContextMenuHandler,
                                                                       HasHandlers {
 
-    private ScenarioGridPanel scenarioGridPanel;
-    private ScenarioGridLayer scenarioGridLayer;
     private HandlerManager handlerManager;
 
-    public ScenarioSimulationGridPanelContextMenuHandler(final ScenarioGridLayer scenarioGridLayer) {
-        this.scenarioGridLayer = scenarioGridLayer;
+    public ScenarioSimulationGridPanelContextMenuHandler() {
         handlerManager = new HandlerManager(this);
     }
-
-    public void setScenarioGridPanel(ScenarioGridPanel scenarioGridPanel) {
-        this.scenarioGridPanel = scenarioGridPanel;
-    }
-
 
     @Override
     @SuppressWarnings("unchecked")
@@ -51,5 +41,4 @@ public class ScenarioSimulationGridPanelContextMenuHandler implements ContextMen
     public void fireEvent(GwtEvent<?> event) {
         handlerManager.fireEvent(event);
     }
-
 }

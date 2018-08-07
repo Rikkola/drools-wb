@@ -18,25 +18,36 @@ package org.drools.workbench.screens.scenariosimulation.client.editor;
 
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import com.google.gwt.user.client.Command;
+import org.drools.workbench.screens.scenariosimulation.client.factories.ScenarioSimulationViewProvider;
+import org.drools.workbench.screens.scenariosimulation.client.resources.i18n.ScenarioSimulationEditorConstants;
 import org.drools.workbench.screens.scenariosimulation.client.widgets.ScenarioGridPanel;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
-
+import org.uberfire.workbench.model.menu.MenuItem;
 
 /**
  * Implementation of the main view for the ScenarioSimulation editor.
- *
+ * <p>
  * This view contains a <code>ScenarioGridPanel</code>.
- *
  */
 public class ScenarioSimulationViewImpl
         extends KieEditorViewImpl
         implements ScenarioSimulationView {
 
     private ScenarioGridPanel scenarioGridPanel;
+    private ScenarioSimulationEditorPresenter presenter;
 
-    public ScenarioSimulationViewImpl(ScenarioGridPanel scenarioGridPanel) {
-        this.scenarioGridPanel = scenarioGridPanel;
+    @Inject
+    public ScenarioSimulationViewImpl() {
+        this.scenarioGridPanel = ScenarioSimulationViewProvider.newScenarioGridPanel();
         initWidget(scenarioGridPanel);
+    }
+
+    @Override
+    public void init(ScenarioSimulationEditorPresenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -47,5 +58,16 @@ public class ScenarioSimulationViewImpl
     @Override
     public ScenarioGridPanel getScenarioGridPanel() {
         return scenarioGridPanel;
+    }
+
+    @Override
+    public MenuItem getRunScenarioMenuItem() {
+        return new RunScenarioMenuItem(ScenarioSimulationEditorConstants.INSTANCE.RunScenario(),
+                                       new Command() {
+                                           @Override
+                                           public void execute() {
+                                               presenter.onRunScenario();
+                                           }
+                                       });
     }
 }
