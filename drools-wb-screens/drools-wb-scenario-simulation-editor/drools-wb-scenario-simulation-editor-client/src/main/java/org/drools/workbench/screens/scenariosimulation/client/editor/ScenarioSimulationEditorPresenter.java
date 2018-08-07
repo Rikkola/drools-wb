@@ -22,10 +22,21 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.RootPanel;
+import org.drools.workbench.screens.scenariosimulation.client.editor.menu.GridContextMenu;
+import org.drools.workbench.screens.scenariosimulation.client.editor.menu.HeaderContextMenu;
+import org.drools.workbench.screens.scenariosimulation.client.factories.ScenarioSimulationViewProvider;
+import org.drools.workbench.screens.scenariosimulation.client.handlers.ScenarioSimulationGridPanelClickHandler;
 import org.drools.workbench.screens.scenariosimulation.client.rightpanel.RightPanelPresenter;
 import org.drools.workbench.screens.scenariosimulation.client.type.ScenarioSimulationResourceType;
 import org.drools.workbench.screens.scenariosimulation.client.widgets.RightPanelMenuItem;
+import org.drools.workbench.screens.scenariosimulation.client.widgets.ScenarioGrid;
+import org.drools.workbench.screens.scenariosimulation.client.widgets.ScenarioGridLayer;
+import org.drools.workbench.screens.scenariosimulation.client.widgets.ScenarioGridPanel;
 import org.drools.workbench.screens.scenariosimulation.model.ScenarioSimulationModel;
 import org.drools.workbench.screens.scenariosimulation.model.ScenarioSimulationModelContent;
 import org.drools.workbench.screens.scenariosimulation.service.ScenarioSimulationService;
@@ -70,10 +81,16 @@ public class ScenarioSimulationEditorPresenter
     private Caller<ScenarioSimulationService> service;
 
     private ScenarioSimulationResourceType type;
+    private GridContextMenu gridContextMenu;
+    private HeaderContextMenu headerContextMenu;
 
     private AsyncPackageDataModelOracle oracle;
 
     private ScenarioSimulationView view;
+
+    private ScenarioSimulationGridPanelClickHandler scenarioSimulationGridPanelClickHandler;
+
+    protected HandlerRegistration clickHandlerRegistration;
 
     @Inject
     private RightPanelMenuItem rightPanelMenuItem;
@@ -88,10 +105,14 @@ public class ScenarioSimulationEditorPresenter
                                              final ScenarioSimulationResourceType type,
                                              final ImportsWidgetPresenter importsWidget,
                                              final AsyncPackageDataModelOracleFactory oracleFactory,
-                                             final PlaceManager placeManager) {
+                                             final PlaceManager placeManager,
+                                             final GridContextMenu gridContextMenu,
+                                             final HeaderContextMenu headerContextMenu) {
         super(view);
         this.view = view;
         this.baseView = view;
+        this.gridContextMenu = gridContextMenu;
+        this.headerContextMenu = headerContextMenu;
         this.service = service;
         this.type = type;
         this.importsWidget = importsWidget;
@@ -99,6 +120,8 @@ public class ScenarioSimulationEditorPresenter
         this.placeManager = placeManager;
 
         view.init(this); // TODO Test this
+        initComponents();
+        addMenuItems();
     }
 
     @OnStartup
@@ -109,6 +132,7 @@ public class ScenarioSimulationEditorPresenter
                    type);
         view.getScenarioGridPanel().getDefaultGridLayer().enterPinnedMode(view.getScenarioGridPanel().getScenarioGrid(), () -> {
         });  // Hack to overcome default implementation
+        registerClickHandler();
     }
 
     @OnClose
@@ -117,6 +141,9 @@ public class ScenarioSimulationEditorPresenter
         if (PlaceStatus.OPEN.equals(placeManager.getStatus(RightPanelPresenter.IDENTIFIER))) {
             placeManager.closePlace(RightPanelPresenter.IDENTIFIER);
             this.getView().showLoading();
+        }
+        if (clickHandlerRegistration != null) {
+            clickHandlerRegistration.removeHandler();
         }
     }
 
@@ -165,6 +192,18 @@ public class ScenarioSimulationEditorPresenter
         return view;
     }
 
+    public ScenarioGridPanel getScenarioGridPanel() {
+        return ((ScenarioSimulationView) baseView).getScenarioGridPanel();
+    }
+
+    public ScenarioGrid getScenarioGrid() {
+        return getScenarioGridPanel().getScenarioGrid();
+    }
+
+    public ScenarioSimulationModel getModel() {
+        return model;
+    }
+
     /**
      * If you want to customize the menu override this method.
      */
@@ -196,9 +235,50 @@ public class ScenarioSimulationEditorPresenter
                 .addNewTopLevelMenu(alertsButtonMenuItemBuilder.build());
     }
 
+    protected void registerClickHandler() {
+        clickHandlerRegistration = RootPanel.get().addDomHandler(scenarioSimulationGridPanelClickHandler, ClickEvent.getType());
+    }
+
+    protected void initComponents() {
+        // Indirections added for test-purpose
+        final ScenarioGridLayer scenarioGridLayer = newScenarioGridLayer();
+        final ScenarioGridPanel scenarioGridPanel = newScenarioGridPanel(scenarioGridLayer);
+        scenarioSimulationGridPanelClickHandler = newScenarioSimulationGridPanelClickHandler(scenarioGridPanel.getScenarioGrid());
+        scenarioSimulationGridPanelClickHandler.setGridContextMenu(gridContextMenu);
+        scenarioSimulationGridPanelClickHandler.setHeaderContextMenu(headerContextMenu);
+        scenarioGridPanel.setClickHandler(scenarioSimulationGridPanelClickHandler);
+        this.view = newScenarioSimulationView(scenarioGridPanel);   // Indirection added for test-purpose
+        this.baseView = view;
+    }
+
+    // Add only for testing purpose
+    protected ScenarioGridLayer newScenarioGridLayer() {
+        return new ScenarioGridLayer();
+    }
+
+    protected ScenarioSimulationGridPanelClickHandler newScenarioSimulationGridPanelClickHandler(
+            final ScenarioGrid scenarioGrid) {
+        return ScenarioSimulationViewProvider.newScenarioSimulationGridPanelClickHandler(scenarioGrid);
+    }
+
+    protected ScenarioGridPanel newScenarioGridPanel(final ScenarioGridLayer scenarioGridLayer) {
+        return ScenarioSimulationViewProvider.newScenarioGridPanel(scenarioGridLayer);
+    }
+
+    protected ScenarioSimulationView newScenarioSimulationView(final ScenarioGridPanel newScenarioGridPanel) {
+        return ScenarioSimulationViewProvider.newScenarioSimulationView(newScenarioGridPanel);
+    }
+
     protected void loadContent() {
         service.call(getModelSuccessCallback(),
                      getNoSuchFileExceptionErrorCallback()).loadContent(versionRecordManager.getCurrentPath());
+    }
+
+    protected void addMenuItems() {
+        gridContextMenu.addMenuItem("one", "ONE", "", () -> GWT.log("ONE COMMAND"));
+        gridContextMenu.addMenuItem("two", "TWO", "", () -> GWT.log("TWO COMMAND"));
+        headerContextMenu.addMenuItem("one", "HEADER-ONE", "", () -> GWT.log("HEADER-ONE COMMAND"));
+        headerContextMenu.addMenuItem("two", "HEADER-TWO", "", () -> GWT.log("HEADER-TWO COMMAND"));
     }
 
     private RemoteCallback<ScenarioSimulationModelContent> getModelSuccessCallback() {

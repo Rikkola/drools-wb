@@ -70,4 +70,10 @@ public class ScenarioSimulationViewImpl
                                            }
                                        });
     }
+
+    @Override
+    public void setContent(Map<Integer, String> headersMap, Map<Integer, Map<Integer, String>> rowsMap) {
+        scenarioGridPanel.getScenarioGrid().setContent(headersMap, rowsMap);
+    }
+
 }

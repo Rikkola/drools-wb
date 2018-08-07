@@ -56,5 +56,5 @@ public interface ScenarioSimulationEditorConstants
 
     String scenarioCheatSheet();
 
-    String RunScenario();
+    String runScenarioSimulation();
 }

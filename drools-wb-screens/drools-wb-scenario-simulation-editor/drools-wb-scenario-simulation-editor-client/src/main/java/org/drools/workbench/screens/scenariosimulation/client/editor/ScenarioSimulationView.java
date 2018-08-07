@@ -26,11 +26,11 @@ import org.uberfire.workbench.model.menu.MenuItem;
 public interface ScenarioSimulationView extends KieEditorView,
                                                 IsWidget {
 
-    void setContent(final Map<Integer, String> headersMap, final Map<Integer, Map<Integer, String>> rowsMap);
-
     ScenarioGridPanel getScenarioGridPanel();
 
     MenuItem getRunScenarioMenuItem();
 
     void init(ScenarioSimulationEditorPresenter presenter);
+    void setContent(final Map<Integer, String> headersMap, final Map<Integer, Map<Integer, String>> rowsMap);
+
 }
