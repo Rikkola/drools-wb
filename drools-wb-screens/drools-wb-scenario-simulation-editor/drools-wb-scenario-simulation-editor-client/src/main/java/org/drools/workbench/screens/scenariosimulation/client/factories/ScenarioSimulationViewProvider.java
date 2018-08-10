@@ -15,10 +15,7 @@
  */
 package org.drools.workbench.screens.scenariosimulation.client.factories;
 
-import org.drools.workbench.screens.scenariosimulation.client.editor.ScenarioSimulationView;
-import org.drools.workbench.screens.scenariosimulation.client.editor.ScenarioSimulationViewImpl;
 import org.drools.workbench.screens.scenariosimulation.client.handlers.ScenarioSimulationGridPanelClickHandler;
-import org.drools.workbench.screens.scenariosimulation.client.handlers.ScenarioSimulationGridPanelContextMenuHandler;
 import org.drools.workbench.screens.scenariosimulation.client.models.ScenarioGridModel;
 import org.drools.workbench.screens.scenariosimulation.client.renderers.ScenarioGridRenderer;
 import org.drools.workbench.screens.scenariosimulation.client.widgets.ScenarioGrid;
@@ -30,9 +27,8 @@ import org.drools.workbench.screens.scenariosimulation.client.widgets.ScenarioGr
  */
 public class ScenarioSimulationViewProvider {
 
-    public static ScenarioGridPanel newScenarioGridPanel() {
-        final ScenarioGridLayer scenarioGridLayer = new ScenarioGridLayer();
-        ScenarioGridPanel toReturn = new ScenarioGridPanel(newScenarioSimulationGridPanelContextMenuHandler());
+    public static ScenarioGridPanel newScenarioGridPanel(final ScenarioGridLayer scenarioGridLayer) {
+        ScenarioGridPanel toReturn = new ScenarioGridPanel();
         ScenarioGrid scenarioGrid = newScenarioGrid(toReturn, scenarioGridLayer);
         scenarioGridLayer.addScenarioGrid(scenarioGrid);
         toReturn.add(scenarioGridLayer);
@@ -47,7 +43,4 @@ public class ScenarioSimulationViewProvider {
         return new ScenarioGrid(new ScenarioGridModel(), scenarioGridLayer, new ScenarioGridRenderer(false), scenarioGridPanel);
     }
 
-    private static ScenarioSimulationGridPanelContextMenuHandler newScenarioSimulationGridPanelContextMenuHandler() {
-        return new ScenarioSimulationGridPanelContextMenuHandler();
-    }
 }

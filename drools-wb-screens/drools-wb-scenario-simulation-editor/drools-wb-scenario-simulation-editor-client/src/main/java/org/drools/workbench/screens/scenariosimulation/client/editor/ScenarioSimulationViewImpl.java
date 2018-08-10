@@ -20,9 +20,17 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.RootPanel;
+import org.drools.workbench.screens.scenariosimulation.client.editor.menu.GridContextMenu;
+import org.drools.workbench.screens.scenariosimulation.client.editor.menu.HeaderContextMenu;
 import org.drools.workbench.screens.scenariosimulation.client.factories.ScenarioSimulationViewProvider;
+import org.drools.workbench.screens.scenariosimulation.client.handlers.ScenarioSimulationGridPanelClickHandler;
 import org.drools.workbench.screens.scenariosimulation.client.resources.i18n.ScenarioSimulationEditorConstants;
+import org.drools.workbench.screens.scenariosimulation.client.widgets.ScenarioGridLayer;
 import org.drools.workbench.screens.scenariosimulation.client.widgets.ScenarioGridPanel;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -40,14 +48,29 @@ public class ScenarioSimulationViewImpl
     private ScenarioSimulationEditorPresenter presenter;
 
     @Inject
-    public ScenarioSimulationViewImpl() {
-        this.scenarioGridPanel = ScenarioSimulationViewProvider.newScenarioGridPanel();
-        initWidget(scenarioGridPanel);
-    }
+    ScenarioGridLayer scenarioGridLayer;
+
+    @Inject
+    private GridContextMenu gridContextMenu;
+
+    @Inject
+    private HeaderContextMenu headerContextMenu;
+
+    protected HandlerRegistration clickHandlerRegistration;
 
     @Override
-    public void init(ScenarioSimulationEditorPresenter presenter) {
+    public void init(final ScenarioSimulationEditorPresenter presenter) {
         this.presenter = presenter;
+        this.scenarioGridPanel = ScenarioSimulationViewProvider.newScenarioGridPanel(scenarioGridLayer);
+        scenarioGridLayer.enterPinnedMode(scenarioGridLayer.getScenarioGrid(), () -> {
+        });  // Hack to overcome default implementation
+
+        ScenarioSimulationGridPanelClickHandler scenarioSimulationGridPanelClickHandler = ScenarioSimulationViewProvider.newScenarioSimulationGridPanelClickHandler(scenarioGridPanel.getScenarioGrid());
+        clickHandlerRegistration = RootPanel.get().addDomHandler(scenarioSimulationGridPanelClickHandler, ClickEvent.getType());
+        scenarioSimulationGridPanelClickHandler.setGridContextMenu(gridContextMenu);
+        scenarioSimulationGridPanelClickHandler.setHeaderContextMenu(headerContextMenu);
+        scenarioGridPanel.setClickHandler(scenarioSimulationGridPanelClickHandler);
+        initWidget(scenarioGridPanel);
     }
 
     @Override
@@ -56,13 +79,25 @@ public class ScenarioSimulationViewImpl
     }
 
     @Override
-    public ScenarioGridPanel getScenarioGridPanel() {
-        return scenarioGridPanel;
+    public void clear() {
+        if (clickHandlerRegistration != null) {
+            clickHandlerRegistration.removeHandler();
+        }
+    }
+
+    @Override
+    public void addGridMenuItem(String id, String label, String i18n, Command command) {
+        gridContextMenu.addMenuItem(id,label,i18n,command);
+    }
+
+    @Override
+    public void addHeaderMenuItem(String id, String label, String i18n, Command command) {
+        headerContextMenu.addMenuItem(id,label,i18n,command);
     }
 
     @Override
     public MenuItem getRunScenarioMenuItem() {
-        return new RunScenarioMenuItem(ScenarioSimulationEditorConstants.INSTANCE.RunScenario(),
+        return new RunScenarioMenuItem(ScenarioSimulationEditorConstants.INSTANCE.runScenarioSimulation(),
                                        new Command() {
                                            @Override
                                            public void execute() {
@@ -70,10 +105,4 @@ public class ScenarioSimulationViewImpl
                                            }
                                        });
     }
-
-    @Override
-    public void setContent(Map<Integer, String> headersMap, Map<Integer, Map<Integer, String>> rowsMap) {
-        scenarioGridPanel.getScenarioGrid().setContent(headersMap, rowsMap);
-    }
-
 }
