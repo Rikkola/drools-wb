@@ -169,6 +169,7 @@ public class ScenarioSimulationEditorPresenter
     public void onClose() {
         this.versionRecordManager.clear();
         scenarioGridPanel.unregister();
+        super.onClose();
     }
 
     @OnMayClose
@@ -463,5 +464,10 @@ public class ScenarioSimulationEditorPresenter
 
     private Command getPopulateRightPanelCommand() {
         return this::populateRightPanel;
+    }
+
+    @Override
+    protected String getEditorIdentifier() {
+        return IDENTIFIER;
     }
 }

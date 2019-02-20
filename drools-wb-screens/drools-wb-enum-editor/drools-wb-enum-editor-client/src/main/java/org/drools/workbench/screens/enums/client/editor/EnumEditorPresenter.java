@@ -51,9 +51,11 @@ import org.uberfire.workbench.model.menu.Menus;
  * Enum Editor Presenter
  */
 @Dependent
-@WorkbenchEditor(identifier = "EnumEditor", supportedTypes = {EnumResourceType.class})
+@WorkbenchEditor(identifier = EnumEditorPresenter.EDITOR_ID, supportedTypes = {EnumResourceType.class})
 public class EnumEditorPresenter
         extends KieEditor<String> {
+
+    public static final String EDITOR_ID = "EnumEditor";
 
     private EnumEditorView view;
 
@@ -151,6 +153,12 @@ public class EnumEditorPresenter
     @OnClose
     public void onClose() {
         this.versionRecordManager.clear();
+        super.onClose();
+    }
+
+    @Override
+    protected String getEditorIdentifier() {
+        return EDITOR_ID;
     }
 
     @OnMayClose

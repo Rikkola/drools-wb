@@ -16,7 +16,6 @@
 
 package org.drools.workbench.screens.testscenario.client;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -54,7 +53,6 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.workbench.events.AbstractPlaceEvent;
 import org.uberfire.client.workbench.events.PlaceGainFocusEvent;
 import org.uberfire.client.workbench.events.PlaceHiddenEvent;
 import org.uberfire.ext.editor.commons.service.support.SupportsSaveAndRename;
@@ -78,10 +76,9 @@ public class ScenarioEditorPresenter
     private final AsyncPackageDataModelOracleFactory oracleFactory;
     private final Caller<TestRunnerService> testService;
     private final ImportsWidgetPresenter importsWidget;
-
-    private User user;
     private final SettingsPage settingsPage;
     private final AuditPage auditPage;
+    private User user;
     private Scenario scenario;
     private AsyncPackageDataModelOracle dmo;
 
@@ -144,13 +141,6 @@ public class ScenarioEditorPresenter
         if (verifyEventIdentifier(event)) {
             showTestPanelEvent.fire(new OnShowTestPanelEvent());
         }
-    }
-
-    private boolean verifyEventIdentifier(AbstractPlaceEvent event) {
-        return (Objects.equals(IDENTIFIER,
-                               event.getPlace().getIdentifier()) &&
-                Objects.equals(place,
-                               event.getPlace()));
     }
 
     protected void loadContent() {
@@ -329,10 +319,16 @@ public class ScenarioEditorPresenter
         return scenario;
     }
 
+    @Override
+    protected String getEditorIdentifier() {
+        return IDENTIFIER;
+    }
+
     @OnClose
     public void onClose() {
         versionRecordManager.clear();
         this.oracleFactory.destroy(dmo);
+        super.onClose();
     }
 
     TestRunFailedErrorCallback getTestRunFailedCallback() {
