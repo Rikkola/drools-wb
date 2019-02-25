@@ -56,6 +56,7 @@ import org.kie.workbench.common.widgets.configresource.client.widget.bound.Impor
 import org.kie.workbench.common.widgets.metadata.client.KieEditorWrapperView;
 import org.kie.workbench.common.widgets.metadata.client.validation.AssetUpdateValidator;
 import org.kie.workbench.common.widgets.metadata.client.widget.OverviewWidgetPresenter;
+import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
 import org.kie.workbench.common.workbench.client.test.TestReportingDocksHandler;
 import org.kie.workbench.common.workbench.client.test.TestRunnerReportingScreen;
 import org.mockito.ArgumentCaptor;
@@ -102,74 +103,54 @@ import static org.mockito.Mockito.when;
 public class ScenarioEditorPresenterTest {
 
     @Mock
+    protected AlertsButtonMenuItemBuilder alertsButtonMenuItemBuilder;
+    @Mock
+    protected MenuItem alertsButtonMenuItem;
+    @Mock
+    CommonConstants commonConstants;
+    @Mock
+    TestRunnerReportingScreen testRunnerReportingScreen;
+    @Mock
+    TestReportingDocksHandler testReportingDocksHandler;
+    @Mock
+    AuthoringWorkbenchDocks docks;
+    @Mock
     private EventSourceMock showTestPanelEvent;
     @Mock
     private EventSourceMock hideTestPanelEvent;
-
-    @Mock
-    CommonConstants commonConstants;
-
     @Captor
     private ArgumentCaptor<Scenario> scenarioArgumentCaptor;
-
     @Mock
     private KieEditorWrapperView kieView;
-
     @Mock
     private ScenarioEditorView view;
-
     @Mock
     private VersionRecordManager versionRecordManager;
-
     @Mock
     private OverviewWidgetPresenter overviewWidget;
-
     @Mock
     private MultiPageEditor multiPage;
-
     @Mock
     private ImportsWidgetPresenter importsWidget;
-
     @Mock
     private User user;
-
     @Mock
     private ScenarioTestEditorService service;
-
     @Mock
     private TestRunnerService testService;
-
     @Mock
     private BasicFileMenuBuilder menuBuilder;
-
     @Spy
     @InjectMocks
     private FileMenuBuilderImpl fileMenuBuilder;
-
     @Mock
     private ProjectController projectController;
-
     @Mock
     private WorkspaceProjectContext workbenchContext;
-
     @Mock
     private SettingsPage settingsPage;
-
     @Mock
     private AuditPage auditPage;
-
-    @Mock
-    protected AlertsButtonMenuItemBuilder alertsButtonMenuItemBuilder;
-
-    @Mock
-    protected MenuItem alertsButtonMenuItem;
-
-    @Mock
-    TestRunnerReportingScreen testRunnerReportingScreen;
-
-    @Mock
-    TestReportingDocksHandler testReportingDocksHandler;
-
     private CallerMock<ScenarioTestEditorService> fakeService;
     private ScenarioEditorPresenter editor;
     private Scenario scenario;
@@ -196,6 +177,7 @@ public class ScenarioEditorPresenterTest {
                                                  showTestPanelEvent,
                                                  hideTestPanelEvent) {
             {
+                docks = ScenarioEditorPresenterTest.this.docks;
                 kieView = ScenarioEditorPresenterTest.this.kieView;
                 versionRecordManager = ScenarioEditorPresenterTest.this.versionRecordManager;
                 overviewWidget = ScenarioEditorPresenterTest.this.overviewWidget;
@@ -278,7 +260,7 @@ public class ScenarioEditorPresenterTest {
         editor.onStartup(mock(ObservablePath.class),
                          place);
 
-        editor.hideDiagramEditorDocks(new PlaceHiddenEvent(place));
+        editor.onHideDocks(new PlaceHiddenEvent(place));
         verify(hideTestPanelEvent).fire(any());
         verify(testRunnerReportingScreen).reset();
     }
@@ -288,7 +270,7 @@ public class ScenarioEditorPresenterTest {
         editor.onStartup(mock(ObservablePath.class),
                          new DefaultPlaceRequest(ScenarioEditorPresenter.IDENTIFIER));
 
-        editor.hideDiagramEditorDocks(new PlaceHiddenEvent(new DefaultPlaceRequest("wrong name")));
+        editor.onHideDocks(new PlaceHiddenEvent(new DefaultPlaceRequest("wrong name")));
         verify(hideTestPanelEvent, never()).fire(any());
     }
 

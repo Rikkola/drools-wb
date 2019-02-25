@@ -57,6 +57,7 @@ import org.kie.workbench.common.widgets.metadata.client.menu.RegisteredDocuments
 import org.kie.workbench.common.widgets.metadata.client.menu.RegisteredDocumentsMenuView;
 import org.kie.workbench.common.widgets.metadata.client.menu.RegisteredDocumentsMenuView.DocumentMenuItem;
 import org.kie.workbench.common.widgets.metadata.client.widget.OverviewWidgetPresenter;
+import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.client.mvp.PlaceManager;
@@ -260,6 +261,9 @@ public class GuidedDecisionTableEditorMenusTest {
     @Mock
     protected MenuItem alertsButtonMenuItem;
 
+    @Mock
+    protected AuthoringWorkbenchDocks docks;
+
     private GuidedDecisionTableEditorPresenter presenter;
     private GuidedDTableResourceType resourceType = new GuidedDTableResourceType(new Decision());
 
@@ -338,6 +342,7 @@ public class GuidedDecisionTableEditorMenusTest {
 
         final GuidedDecisionTableEditorPresenter wrapped = new GuidedDecisionTableEditorPresenter(view,
                                                                                                   dtServiceCaller,
+                                                                                                  docks,
                                                                                                   notification,
                                                                                                   decisionTableSelectedEvent,
                                                                                                   validationPopup,

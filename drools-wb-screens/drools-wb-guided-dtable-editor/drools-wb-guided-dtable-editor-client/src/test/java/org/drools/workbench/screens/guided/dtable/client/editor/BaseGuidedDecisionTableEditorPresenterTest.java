@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.soup.project.datamodel.imports.Imports;
 import org.kie.workbench.common.widgets.client.datamodel.AsyncPackageDataModelOracle;
+import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.uberfire.backend.vfs.ObservablePath;
@@ -76,11 +77,14 @@ public class BaseGuidedDecisionTableEditorPresenterTest extends BaseGuidedDecisi
 
     @Mock
     private SaveAndRenameCommandBuilder<GuidedDecisionTable52, Metadata> saveAndRenameCommandBuilder;
+    @Mock
+    private AuthoringWorkbenchDocks docks;
 
     @Override
     protected GuidedDecisionTableEditorPresenter getPresenter() {
         return new GuidedDecisionTableEditorPresenter(view,
                                                       dtServiceCaller,
+                                                      docks,
                                                       notification,
                                                       decisionTableSelectedEvent,
                                                       validationPopup,
@@ -96,6 +100,7 @@ public class BaseGuidedDecisionTableEditorPresenterTest extends BaseGuidedDecisi
                                                       saveAndRenameCommandBuilder,
                                                       alertsButtonMenuItemBuilder,
                                                       downloadMenuItem) {
+
             @Override
             protected Command getSaveAndRenameCommand() {
                 return mock(Command.class);

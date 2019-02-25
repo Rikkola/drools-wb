@@ -22,7 +22,6 @@ import java.util.Set;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.ProvidesResize;
@@ -106,11 +105,11 @@ public abstract class BaseGuidedDecisionTableEditorPresenter extends KieMultiple
     protected PlaceManager placeManager;
     protected AlertsButtonMenuItemBuilder alertsButtonMenuItemBuilder;
     private ColumnsPage columnsPage;
-    @Inject
     private AuthoringWorkbenchDocks docks;
 
     public BaseGuidedDecisionTableEditorPresenter(final View view,
                                                   final Caller<GuidedDecisionTableEditorService> service,
+                                                  final AuthoringWorkbenchDocks docks,
                                                   final Event<NotificationEvent> notification,
                                                   final Event<DecisionTableSelectedEvent> decisionTableSelectedEvent,
                                                   final ValidationPopup validationPopup,
@@ -128,6 +127,7 @@ public abstract class BaseGuidedDecisionTableEditorPresenter extends KieMultiple
         super(view);
         this.view = view;
         this.service = service;
+        this.docks = docks;
         this.notification = notification;
         this.decisionTableSelectedEvent = decisionTableSelectedEvent;
         this.validationPopup = validationPopup;

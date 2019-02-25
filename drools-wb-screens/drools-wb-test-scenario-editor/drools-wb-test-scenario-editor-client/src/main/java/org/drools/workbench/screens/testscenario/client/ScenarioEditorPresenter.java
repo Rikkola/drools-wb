@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
@@ -53,8 +52,6 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.workbench.events.PlaceGainFocusEvent;
-import org.uberfire.client.workbench.events.PlaceHiddenEvent;
 import org.uberfire.ext.editor.commons.service.support.SupportsSaveAndRename;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
 import org.uberfire.lifecycle.OnClose;
@@ -129,19 +126,32 @@ public class ScenarioEditorPresenter
                    place,
                    type);
     }
+//
+//    public void hideDiagramEditorDocks(@Observes PlaceHiddenEvent event) {
+//        if (verifyEventIdentifier(event)) {
+//            hideTestPanelEvent.fire(new OnHideTestPanelEvent());
+//            testRunnerReportingScreen.reset();
+//        }
+//    }
 
-    public void hideDiagramEditorDocks(@Observes PlaceHiddenEvent event) {
-        if (verifyEventIdentifier(event)) {
-            hideTestPanelEvent.fire(new OnHideTestPanelEvent());
-            testRunnerReportingScreen.reset();
-        }
+    @Override
+    public void hideDocks() {
+        super.hideDocks();
+        hideTestPanelEvent.fire(new OnHideTestPanelEvent());
+        testRunnerReportingScreen.reset();
     }
 
-    public void showDiagramEditorDocks(@Observes PlaceGainFocusEvent event) {
-        if (verifyEventIdentifier(event)) {
-            showTestPanelEvent.fire(new OnShowTestPanelEvent());
-        }
+    @Override
+    public void showDocks() {
+        super.showDocks();
+        showTestPanelEvent.fire(new OnShowTestPanelEvent());
     }
+
+//    public void showDiagramEditorDocks(@Observes PlaceGainFocusEvent event) {
+//        if (verifyEventIdentifier(event)) {
+//            showTestPanelEvent.fire(new OnShowTestPanelEvent());
+//        }
+//    }
 
     protected void loadContent() {
         view.showLoading();

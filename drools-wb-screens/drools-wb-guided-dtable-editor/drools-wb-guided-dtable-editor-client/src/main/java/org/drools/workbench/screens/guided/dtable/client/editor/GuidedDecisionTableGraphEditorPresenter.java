@@ -67,6 +67,7 @@ import org.kie.workbench.common.widgets.client.menu.FileMenuBuilder;
 import org.kie.workbench.common.widgets.client.popups.validation.ValidationPopup;
 import org.kie.workbench.common.widgets.metadata.client.validation.AssetUpdateValidator;
 import org.kie.workbench.common.widgets.metadata.client.widget.OverviewWidgetPresenter;
+import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.annotations.WorkbenchEditor;
@@ -130,6 +131,7 @@ public class GuidedDecisionTableGraphEditorPresenter extends BaseGuidedDecisionT
     @Inject
     public GuidedDecisionTableGraphEditorPresenter(final View view,
                                                    final Caller<GuidedDecisionTableEditorService> service,
+                                                   final AuthoringWorkbenchDocks docks,
                                                    final Caller<GuidedDecisionTableGraphEditorService> graphService,
                                                    final Caller<KieModuleService> moduleService,
                                                    final Caller<GuidedDecisionTableGraphSaveAndRenameService> graphSaveAndRenameService,
@@ -153,6 +155,7 @@ public class GuidedDecisionTableGraphEditorPresenter extends BaseGuidedDecisionT
                                                    final DownloadMenuItem downloadMenuItem) {
         super(view,
               service,
+              docks,
               notification,
               decisionTableSelectedEvent,
               validationPopup,

@@ -58,6 +58,7 @@ import org.kie.workbench.common.widgets.client.datamodel.AsyncPackageDataModelOr
 import org.kie.workbench.common.widgets.client.source.ViewDRLSourceWidget;
 import org.kie.workbench.common.widgets.metadata.client.KieDocument;
 import org.kie.workbench.common.widgets.metadata.client.widget.OverviewWidgetPresenter;
+import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -176,6 +177,9 @@ public class GuidedDecisionTableGraphEditorPresenterTest extends BaseGuidedDecis
     @Captor
     private ArgumentCaptor<RemoteCallback<Path>> onSaveSuccessCallbackCaptor;
 
+    @Mock
+    protected AuthoringWorkbenchDocks docks;
+
     private Event<SaveInProgressEvent> saveInProgressEvent = spy(new EventSourceMock<SaveInProgressEvent>() {
         @Override
         public void fire(final SaveInProgressEvent event) {
@@ -203,6 +207,7 @@ public class GuidedDecisionTableGraphEditorPresenterTest extends BaseGuidedDecis
     protected GuidedDecisionTableGraphEditorPresenter getPresenter() {
         return new GuidedDecisionTableGraphEditorPresenter(view,
                                                            dtServiceCaller,
+                                                           docks,
                                                            dtGraphServiceCaller,
                                                            moduleServiceCaller,
                                                            graphSaveAndRenameServiceCaller,
@@ -1644,6 +1649,7 @@ public class GuidedDecisionTableGraphEditorPresenterTest extends BaseGuidedDecis
     private GuidedDecisionTableGraphEditorPresenter makePresenter() {
         return new GuidedDecisionTableGraphEditorPresenter(view,
                                                            dtServiceCaller,
+                                                           docks,
                                                            dtGraphServiceCaller,
                                                            moduleServiceCaller,
                                                            graphSaveAndRenameServiceCaller,
