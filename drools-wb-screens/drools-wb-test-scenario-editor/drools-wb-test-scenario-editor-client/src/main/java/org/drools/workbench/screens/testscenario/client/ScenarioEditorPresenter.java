@@ -126,13 +126,6 @@ public class ScenarioEditorPresenter
                    place,
                    type);
     }
-//
-//    public void hideDiagramEditorDocks(@Observes PlaceHiddenEvent event) {
-//        if (verifyEventIdentifier(event)) {
-//            hideTestPanelEvent.fire(new OnHideTestPanelEvent());
-//            testRunnerReportingScreen.reset();
-//        }
-//    }
 
     @Override
     public void hideDocks() {
@@ -146,12 +139,6 @@ public class ScenarioEditorPresenter
         super.showDocks();
         showTestPanelEvent.fire(new OnShowTestPanelEvent());
     }
-
-//    public void showDiagramEditorDocks(@Observes PlaceGainFocusEvent event) {
-//        if (verifyEventIdentifier(event)) {
-//            showTestPanelEvent.fire(new OnShowTestPanelEvent());
-//        }
-//    }
 
     protected void loadContent() {
         view.showLoading();
