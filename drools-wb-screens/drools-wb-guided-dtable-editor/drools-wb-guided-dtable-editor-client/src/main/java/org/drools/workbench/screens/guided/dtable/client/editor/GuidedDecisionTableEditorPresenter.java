@@ -50,6 +50,7 @@ import org.guvnor.messageconsole.client.console.widget.button.AlertsButtonMenuIt
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.kie.workbench.common.services.verifier.reporting.client.panel.AnalysisReportScreen;
 import org.kie.workbench.common.widgets.client.menu.FileMenuBuilder;
 import org.kie.workbench.common.widgets.client.popups.validation.ValidationPopup;
 import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
@@ -80,10 +81,14 @@ import static org.uberfire.client.annotations.WorkbenchEditor.LockingStrategy.ED
  * Guided Decision Table Editor Presenter
  */
 @Dependent
-@WorkbenchEditor(identifier = "GuidedDecisionTableEditor", supportedTypes = {GuidedDTableResourceType.class}, lockingStrategy = EDITOR_PROVIDED)
+@WorkbenchEditor(identifier = GuidedDecisionTableEditorPresenter.IDENTIFIER, supportedTypes = {GuidedDTableResourceType.class}, lockingStrategy = EDITOR_PROVIDED)
 public class GuidedDecisionTableEditorPresenter extends BaseGuidedDecisionTableEditorPresenter {
 
+    public static final String IDENTIFIER = "GuidedDecisionTableEditor";
+
+    private final GuidedDecisionTableDocksHandler guidedDecisionTableDocksHandler;
     private final SaveAndRenameCommandBuilder<GuidedDecisionTable52, Metadata> saveAndRenameCommandBuilder;
+
 
     @Inject
     public GuidedDecisionTableEditorPresenter(final View view,
@@ -92,6 +97,8 @@ public class GuidedDecisionTableEditorPresenter extends BaseGuidedDecisionTableE
                                               final PerspectiveManager perspectiveManager,
                                               final Event<NotificationEvent> notification,
                                               final Event<DecisionTableSelectedEvent> decisionTableSelectedEvent,
+                                              final GuidedDecisionTableDocksHandler guidedDecisionTableDocksHandler,
+                                              final AnalysisReportScreen analysisReportScreen,
                                               final ValidationPopup validationPopup,
                                               final GuidedDTableResourceType resourceType,
                                               final EditMenuBuilder editMenuBuilder,
@@ -111,6 +118,7 @@ public class GuidedDecisionTableEditorPresenter extends BaseGuidedDecisionTableE
               perspectiveManager,
               notification,
               decisionTableSelectedEvent,
+              analysisReportScreen,
               validationPopup,
               resourceType,
               editMenuBuilder,
@@ -124,7 +132,11 @@ public class GuidedDecisionTableEditorPresenter extends BaseGuidedDecisionTableE
               alertsButtonMenuItemBuilder,
               downloadMenuItem);
 
+        this.guidedDecisionTableDocksHandler = guidedDecisionTableDocksHandler;
+
         this.saveAndRenameCommandBuilder = saveAndRenameCommandBuilder;
+
+        this.modeller.addVerificationPanel(analysisReportScreen);
     }
 
     @Override
@@ -142,12 +154,30 @@ public class GuidedDecisionTableEditorPresenter extends BaseGuidedDecisionTableE
 
         loadDocument(path,
                      placeRequest);
+        registerDock(GuidedDecisionTableDocksHandler.VERIFIER_DOCK, analysisReportScreen.asWidget());
+    }
+
+    @Override
+    public void showDocks() {
+        super.showDocks();
+        guidedDecisionTableDocksHandler.addDocks();
+    }
+
+    @Override
+    public void hideDocks() {
+        super.hideDocks();
+        guidedDecisionTableDocksHandler.removeDocks();
     }
 
     @Override
     @OnFocus
     public void onFocus() {
         super.onFocus();
+    }
+
+    @Override
+    protected String getEditorIdentifier() {
+        return GuidedDecisionTableEditorPresenter.IDENTIFIER;
     }
 
     @Override
