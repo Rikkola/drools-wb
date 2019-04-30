@@ -86,9 +86,7 @@ public class GuidedDecisionTableEditorPresenter extends BaseGuidedDecisionTableE
 
     public static final String IDENTIFIER = "GuidedDecisionTableEditor";
 
-    private final GuidedDecisionTableDocksHandler guidedDecisionTableDocksHandler;
     private final SaveAndRenameCommandBuilder<GuidedDecisionTable52, Metadata> saveAndRenameCommandBuilder;
-
 
     @Inject
     public GuidedDecisionTableEditorPresenter(final View view,
@@ -118,6 +116,7 @@ public class GuidedDecisionTableEditorPresenter extends BaseGuidedDecisionTableE
               perspectiveManager,
               notification,
               decisionTableSelectedEvent,
+              guidedDecisionTableDocksHandler,
               analysisReportScreen,
               validationPopup,
               resourceType,
@@ -131,8 +130,6 @@ public class GuidedDecisionTableEditorPresenter extends BaseGuidedDecisionTableE
               columnsPage,
               alertsButtonMenuItemBuilder,
               downloadMenuItem);
-
-        this.guidedDecisionTableDocksHandler = guidedDecisionTableDocksHandler;
 
         this.saveAndRenameCommandBuilder = saveAndRenameCommandBuilder;
 
@@ -154,19 +151,6 @@ public class GuidedDecisionTableEditorPresenter extends BaseGuidedDecisionTableE
 
         loadDocument(path,
                      placeRequest);
-        registerDock(GuidedDecisionTableDocksHandler.VERIFIER_DOCK, analysisReportScreen.asWidget());
-    }
-
-    @Override
-    public void showDocks() {
-        super.showDocks();
-        guidedDecisionTableDocksHandler.addDocks();
-    }
-
-    @Override
-    public void hideDocks() {
-        super.hideDocks();
-        guidedDecisionTableDocksHandler.removeDocks();
     }
 
     @Override

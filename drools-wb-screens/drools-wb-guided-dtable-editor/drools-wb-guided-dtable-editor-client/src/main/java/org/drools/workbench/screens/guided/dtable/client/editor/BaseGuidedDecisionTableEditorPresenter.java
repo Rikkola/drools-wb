@@ -109,6 +109,7 @@ public abstract class BaseGuidedDecisionTableEditorPresenter extends KieMultiple
     protected SyncBeanManager beanManager;
     protected AlertsButtonMenuItemBuilder alertsButtonMenuItemBuilder;
     protected PerspectiveManager perspectiveManager;
+    protected GuidedDecisionTableDocksHandler guidedDecisionTableDocksHandler;
     protected AnalysisReportScreen analysisReportScreen;
     private ColumnsPage columnsPage;
     private AuthoringWorkbenchDocks docks;
@@ -119,6 +120,7 @@ public abstract class BaseGuidedDecisionTableEditorPresenter extends KieMultiple
                                                   final PerspectiveManager perspectiveManager,
                                                   final Event<NotificationEvent> notification,
                                                   final Event<DecisionTableSelectedEvent> decisionTableSelectedEvent,
+                                                  final GuidedDecisionTableDocksHandler guidedDecisionTableDocksHandler,
                                                   final AnalysisReportScreen analysisReportScreen,
                                                   final ValidationPopup validationPopup,
                                                   final ClientResourceType resourceType,
@@ -137,6 +139,7 @@ public abstract class BaseGuidedDecisionTableEditorPresenter extends KieMultiple
         this.service = service;
         this.docks = docks;
         this.perspectiveManager = perspectiveManager;
+        this.guidedDecisionTableDocksHandler = guidedDecisionTableDocksHandler;
         this.analysisReportScreen = analysisReportScreen;
         this.notification = notification;
         this.decisionTableSelectedEvent = decisionTableSelectedEvent;
@@ -243,6 +246,7 @@ public abstract class BaseGuidedDecisionTableEditorPresenter extends KieMultiple
                              final PlaceRequest placeRequest) {
         this.editorPath = path;
         this.editorPlaceRequest = placeRequest;
+        registerDock(GuidedDecisionTableDocksHandler.VERIFIER_DOCK, analysisReportScreen.asWidget());
     }
 
     protected void onFocus() {
@@ -271,10 +275,12 @@ public abstract class BaseGuidedDecisionTableEditorPresenter extends KieMultiple
 
     public void showDocks() {
         docks.show();
+        guidedDecisionTableDocksHandler.addDocks();
     }
 
     public void hideDocks() {
         docks.hide();
+        guidedDecisionTableDocksHandler.removeDocks();
     }
 
     public boolean verifyEventIdentifier(AbstractPlaceEvent event) {
