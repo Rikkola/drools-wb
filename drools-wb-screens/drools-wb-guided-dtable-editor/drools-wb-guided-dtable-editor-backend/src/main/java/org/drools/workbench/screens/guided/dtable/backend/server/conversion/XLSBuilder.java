@@ -57,6 +57,7 @@ public class XLSBuilder {
             return new BuildResult(workbook,
                                    new XLSConversionResult(e.getMessage()));
         } catch (final Exception e) {
+            e.printStackTrace();
             return new BuildResult(workbook,
                                    new XLSConversionResult(e.toString() + " : " + e.getMessage()));
         }

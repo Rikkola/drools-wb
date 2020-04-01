@@ -32,6 +32,10 @@ import org.drools.workbench.models.guided.dtable.shared.model.ActionSetFieldCol5
 import org.drools.workbench.models.guided.dtable.shared.model.ActionWorkItemCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.ActionWorkItemSetFieldCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.AttributeCol52;
+import org.drools.workbench.models.guided.dtable.shared.model.BRLActionColumn;
+import org.drools.workbench.models.guided.dtable.shared.model.BRLActionVariableColumn;
+import org.drools.workbench.models.guided.dtable.shared.model.BRLConditionColumn;
+import org.drools.workbench.models.guided.dtable.shared.model.BRLConditionVariableColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.BaseColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.ConditionCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.DescriptionCol52;
@@ -61,6 +65,7 @@ public class SubHeaderBuilder {
     private final List<String> addedInserts = new ArrayList<>();
 
     private int targetColumnIndex = 0;
+    private int BRLActionColumnCount = 0;
 
     public SubHeaderBuilder(final Sheet sheet,
                             final GuidedDecisionTable52 dtable,
@@ -88,6 +93,14 @@ public class SubHeaderBuilder {
                 makeAttribute((AttributeCol52) baseColumn);
             } else if (baseColumn instanceof MetadataCol52) {
                 makeMetadata((MetadataCol52) baseColumn);
+            } else if (baseColumn instanceof BRLConditionVariableColumn) {
+                final BRLConditionColumn brlColumn = dtable.getBRLColumn((BRLConditionVariableColumn) baseColumn);
+                makeBRLConditionColumn(brlColumn);
+                sourceColumnIndex = sourceColumnIndex + brlColumn.getChildColumns().size() - 1;
+            } else if (baseColumn instanceof BRLActionVariableColumn) {
+                final BRLActionColumn brlColumn = dtable.getBRLColumn((BRLActionVariableColumn) baseColumn);
+                makeBRLActionColumn(brlColumn);
+                sourceColumnIndex = sourceColumnIndex + brlColumn.getChildColumns().size() - 1;
             } else if (baseColumn instanceof ConditionCol52) {
                 makeCondition((ConditionCol52) baseColumn);
             } else if (baseColumn instanceof ActionCol52) {
@@ -103,6 +116,29 @@ public class SubHeaderBuilder {
             }
             targetColumnIndex++;
         }
+    }
+
+    private void makeBRLConditionColumn(final BRLConditionColumn brlColumn) {
+        final BRLColumnSubHeaderBuilder BRLColumnSubHeaderBuilder = new BRLColumnSubHeaderBuilder(dtable,
+                                                                                                  BRLActionColumnCount);
+
+        final String marshal = BRLColumnSubHeaderBuilder.brlConditions(brlColumn);
+
+        makeHeaderAndTitle(CONDITION,
+                           brlColumn.getHeader());
+        fieldRow.createCell(targetColumnIndex).setCellValue(marshal);
+    }
+
+    private void makeBRLActionColumn(final BRLActionColumn brlColumn) {
+        final BRLColumnSubHeaderBuilder BRLColumnSubHeaderBuilder = new BRLColumnSubHeaderBuilder(dtable,
+                                                                                                  BRLActionColumnCount);
+        final String marshal = BRLColumnSubHeaderBuilder.brlActions(brlColumn);
+
+        BRLActionColumnCount = BRLColumnSubHeaderBuilder.getBRLActionColumnCount();
+
+        makeHeaderAndTitle(ACTION,
+                           brlColumn.getHeader());
+        fieldRow.createCell(targetColumnIndex).setCellValue(marshal);
     }
 
     private void makeAction(final int sourceColumnIndex,
@@ -122,10 +158,10 @@ public class SubHeaderBuilder {
         }
     }
 
-    private void makeHeaderAndTitle(final String action,
+    private void makeHeaderAndTitle(final String title,
                                     final String header) {
         headerRow.createCell(targetColumnIndex)
-                .setCellValue(action);
+                .setCellValue(title);
 
         headerTitleRow.createCell(targetColumnIndex)
                 .setCellValue(header);

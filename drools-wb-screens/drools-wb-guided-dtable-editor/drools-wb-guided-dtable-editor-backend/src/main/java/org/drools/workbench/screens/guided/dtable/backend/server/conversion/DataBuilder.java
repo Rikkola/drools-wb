@@ -30,6 +30,11 @@ import org.drools.workbench.models.guided.dtable.shared.model.ActionRetractFactC
 import org.drools.workbench.models.guided.dtable.shared.model.ActionWorkItemCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.ActionWorkItemSetFieldCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.AttributeCol52;
+import org.drools.workbench.models.guided.dtable.shared.model.BRLActionColumn;
+import org.drools.workbench.models.guided.dtable.shared.model.BRLActionVariableColumn;
+import org.drools.workbench.models.guided.dtable.shared.model.BRLColumn;
+import org.drools.workbench.models.guided.dtable.shared.model.BRLConditionColumn;
+import org.drools.workbench.models.guided.dtable.shared.model.BRLConditionVariableColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.BaseColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.ConditionCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.DTCellValue52;
@@ -90,7 +95,8 @@ public class DataBuilder {
 
         public void build() {
 
-            for (final DTCellValue52 cell : row) {
+            for (; sourceColumnIndex < row.size(); sourceColumnIndex++) {
+                final DTCellValue52 cell = row.get(sourceColumnIndex);
 
                 if (sourceColumnIndex == 1) {
                     xlsRow.createCell(targetColumnIndex)
@@ -99,37 +105,116 @@ public class DataBuilder {
 
                     final BaseColumn baseColumn = dtable.getExpandedColumns().get(sourceColumnIndex);
 
-                    if (baseColumn instanceof ActionInsertFactCol52) {
+                    if (baseColumn instanceof BRLActionVariableColumn) {
 
-                        addActionInsertFirstColumn();
-                    }
-
-                    if (isOperator("== null") || isOperator("!= null")) {
+                        final StringBuilder result = new StringBuilder();
+                        final BRLActionColumn brlColumn = dtable.getBRLColumn((BRLActionVariableColumn) baseColumn);
+                        int size = brlColumn.getChildColumns().size();
+                        for (int i = 0; i < size; i++) {
+                            DTCellValue52 newCell = row.get(sourceColumnIndex);
+                            final String value = getValue(newCell,
+                                                          getColumnDataType(sourceColumnIndex), // newCell.getDataType(),
+                                                          false);
+                            if (value != null && isMissingVariable(brlColumn)) {
+                                if (Objects.equals("true", value.toLowerCase())) {
+                                    result.append("X");
+                                }
+                                break;
+                            } else if (value != null) {
+                                result.append(value);
+                            }
+                            if (i < size - 1) {
+                                result.append(", ");
+                                sourceColumnIndex++;
+                            }
+                        }
 
                         xlsRow.createCell(targetColumnIndex)
-                                .setCellValue("null");
-                    } else if (isWorkItemColumn()) {
+                                .setCellValue(result.toString());
+                    } else if (baseColumn instanceof BRLConditionVariableColumn) {
 
-                        if (cell.getBooleanValue() != null
-                                && cell.getBooleanValue()) {
-                            xlsRow.createCell(targetColumnIndex)
-                                    .setCellValue("X");
+                        final StringBuilder result = new StringBuilder();
+                        final BRLConditionColumn brlColumn = dtable.getBRLColumn((BRLConditionVariableColumn) baseColumn);
+                        int size = brlColumn.getChildColumns().size();
+                        for (int i = 0; i < size; i++) {
+                            DTCellValue52 newCell = row.get(sourceColumnIndex);
+                            final String value = getValue(newCell,
+                                                          getColumnDataType(sourceColumnIndex), //newCell.getDataType(),
+                                                          false);
+                            if (value != null && isMissingVariable(brlColumn)) {
+                                if (Objects.equals("true", value.toLowerCase())) {
+                                    result.append("X");
+                                }
+                                break;
+                            } else if (value != null) {
+                                result.append(value);
+                            }
+                            if (i < size - 1) {
+                                result.append(", ");
+                                sourceColumnIndex++;
+                            }
                         }
-                    } else if (dtable.getExpandedColumns().get(sourceColumnIndex) instanceof ActionRetractFactCol52) {
 
-                        if (!StringUtils.isEmpty(cell.getStringValue())) {
-                            xlsRow.createCell(targetColumnIndex)
-                                    .setCellValue(cell.getStringValue());
-                        }
+                        xlsRow.createCell(targetColumnIndex)
+                                .setCellValue(result.toString());
                     } else {
 
-                        setValue(cell, getColumnDataType(sourceColumnIndex));
+                        if (baseColumn instanceof ActionInsertFactCol52) {
+
+                            addActionInsertFirstColumn();
+                        }
+
+                        if (isOperator("== null") || isOperator("!= null")) {
+
+                            xlsRow.createCell(targetColumnIndex)
+                                    .setCellValue("null");
+                        } else if (isWorkItemColumn()) {
+
+                            if (cell.getBooleanValue() != null
+                                    && cell.getBooleanValue()) {
+                                xlsRow.createCell(targetColumnIndex)
+                                        .setCellValue("X");
+                            }
+                        } else if (dtable.getExpandedColumns().get(sourceColumnIndex) instanceof ActionRetractFactCol52) {
+
+                            if (!StringUtils.isEmpty(cell.getStringValue())) {
+                                xlsRow.createCell(targetColumnIndex)
+                                        .setCellValue(cell.getStringValue());
+                            }
+                        } else {
+
+                            final String value = getValue(cell,
+                                                          getColumnDataType(sourceColumnIndex),
+                                                          true);
+                            if (value != null) {
+                                xlsRow.createCell(targetColumnIndex)
+                                        .setCellValue(value);
+                            }
+                        }
                     }
                 }
-                sourceColumnIndex++;
                 targetColumnIndex++;
             }
             rowCount++;
+        }
+
+        private boolean isMissingVariable(final BRLColumn brlColumn) {
+            for (Object childColumn : brlColumn.getChildColumns()) {
+                if (!getVarName(childColumn).isEmpty()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private String getVarName(Object childColumn) {
+            if (childColumn instanceof BRLActionVariableColumn) {
+                return ((BRLActionVariableColumn) childColumn).getVarName();
+            } else if (childColumn instanceof BRLConditionVariableColumn) {
+                return ((BRLConditionVariableColumn) childColumn).getVarName();
+            } else {
+                return "";
+            }
         }
 
         private boolean isWorkItemColumn() {
@@ -152,14 +237,15 @@ public class DataBuilder {
             }
         }
 
-        private void setValue(final DTCellValue52 cell,
-                              final DataType.DataTypes dataType) {
+        private String getValue(final DTCellValue52 cell,
+                                final DataType.DataTypes dataType,
+                                final boolean addQuotes) {
             switch (dataType) {
 
                 case STRING:
 
-                    setStringValue(cell);
-                    break;
+                    return getStringValue(cell,
+                                          addQuotes);
                 case NUMERIC:
                 case NUMERIC_BIGDECIMAL:
                 case NUMERIC_BIGINTEGER:
@@ -169,54 +255,59 @@ public class DataBuilder {
                 case NUMERIC_INTEGER:
                 case NUMERIC_LONG:
                 case NUMERIC_SHORT:
-                    setNumericValue(cell);
-                    break;
+                    return getNumericValue(cell);
                 case DATE:
-                    setDateValue(cell);
-                    break;
+                    return getDateValue(cell,
+                                        addQuotes);
                 case BOOLEAN:
-                    setBooleanValue(cell);
-                    break;
+                    return getBooleanValue(cell);
             }
+            return null;
         }
 
-        private void setNumericValue(final DTCellValue52 cell) {
+        private String getNumericValue(final DTCellValue52 cell) {
             final Number numericValue = cell.getNumericValue();
             if (numericValue != null) {
-                xlsRow.createCell(targetColumnIndex)
-                        .setCellValue(numericValue.toString());
+                return numericValue.toString();
             }
+            return null;
         }
 
-        private void setBooleanValue(final DTCellValue52 cell) {
+        private String getBooleanValue(final DTCellValue52 cell) {
             final Boolean booleanValue = cell.getBooleanValue();
             if (booleanValue != null) {
-                xlsRow.createCell(targetColumnIndex)
-                        .setCellValue(booleanValue.toString());
+
+                return booleanValue.toString();
             }
+            return null;
         }
 
-        private void setDateValue(final DTCellValue52 cell) {
+        private String getDateValue(final DTCellValue52 cell,
+                                    final boolean addQuotes) {
             final Date dateValue = cell.getDateValue();
             if (dateValue != null) {
-
-                xlsRow.createCell(targetColumnIndex)
-                        .setCellValue(String.format("\"%s\"", DateUtils.format(dateValue)));
+                if (addQuotes) {
+                    return String.format("\"%s\"", DateUtils.format(dateValue));
+                } else {
+                    return DateUtils.format(dateValue);
+                }
             }
+            return null;
         }
 
-        private void setStringValue(final DTCellValue52 cell) {
+        private String getStringValue(final DTCellValue52 cell,
+                                      final boolean addQuotes) {
             if (isTheRealCellValueString(sourceColumnIndex) && cell.getStringValue() != null) {
 
                 if (cell.getStringValue() != null && !cell.getStringValue().isEmpty()) {
                     if (isOperator("in")) {
-
-                        xlsRow.createCell(targetColumnIndex)
-                                .setCellValue(String.format("(%s)", fixStringValue(cell)));
+                        return String.format("(%s)", fixStringValue(cell));
                     } else {
-
-                        xlsRow.createCell(targetColumnIndex)
-                                .setCellValue(String.format("\"%s\"", fixStringValue(cell)));
+                        if (addQuotes) {
+                            return String.format("\"%s\"", fixStringValue(cell));
+                        } else {
+                            return cell.getStringValue();
+                        }
                     }
                 }
             } else {
@@ -230,10 +321,12 @@ public class DataBuilder {
                             .setCellValue(cell.getStringValue());
                 } else {
 
-                    setValue(cell,
-                             cell.getDataType());
+                    return getValue(cell,
+                                    cell.getDataType(),
+                                    addQuotes);
                 }
             }
+            return null;
         }
 
         private boolean isOperator(final String operator) {

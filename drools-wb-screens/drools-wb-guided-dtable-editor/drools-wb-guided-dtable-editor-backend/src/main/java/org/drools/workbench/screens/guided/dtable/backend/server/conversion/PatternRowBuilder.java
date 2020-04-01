@@ -21,9 +21,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.drools.core.util.StringUtils;
-import org.drools.workbench.models.guided.dtable.shared.model.BRLActionColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.BRLActionVariableColumn;
-import org.drools.workbench.models.guided.dtable.shared.model.BRLConditionColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.BRLConditionVariableColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.BaseColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.ConditionCol52;
@@ -58,11 +56,12 @@ public class PatternRowBuilder {
 
             final BaseColumn baseColumn = expandedColumns.get(sourceIndex);
 
-            if (baseColumn instanceof BRLConditionVariableColumn
-                    || baseColumn instanceof BRLConditionColumn
-                    || baseColumn instanceof BRLActionVariableColumn
-                    || baseColumn instanceof BRLActionColumn) {
-                throw new UnsupportedOperationException("Conversion of the BRL column is not supported.");
+            if (baseColumn instanceof BRLActionVariableColumn) {
+
+                sourceIndex = sourceIndex + dtable.getBRLColumn((BRLActionVariableColumn) baseColumn).getChildColumns().size() - 1;
+            } else if (baseColumn instanceof BRLConditionVariableColumn) {
+
+                sourceIndex = sourceIndex + dtable.getBRLColumn((BRLConditionVariableColumn) baseColumn).getChildColumns().size() - 1;
             } else if (baseColumn instanceof ConditionCol52) {
 
                 final ConditionCol52 col = (ConditionCol52) baseColumn;
