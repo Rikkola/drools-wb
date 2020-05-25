@@ -30,11 +30,10 @@ import org.drools.workbench.models.guided.dtable.shared.model.ActionRetractFactC
 import org.drools.workbench.models.guided.dtable.shared.model.ActionWorkItemCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.ActionWorkItemSetFieldCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.AttributeCol52;
-import org.drools.workbench.models.guided.dtable.shared.model.BRLActionColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.BRLActionVariableColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.BRLColumn;
-import org.drools.workbench.models.guided.dtable.shared.model.BRLConditionColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.BRLConditionVariableColumn;
+import org.drools.workbench.models.guided.dtable.shared.model.BRLVariableColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.BaseColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.ConditionCol52;
 import org.drools.workbench.models.guided.dtable.shared.model.DTCellValue52;
@@ -105,41 +104,15 @@ public class DataBuilder {
 
                     final BaseColumn baseColumn = dtable.getExpandedColumns().get(sourceColumnIndex);
 
-                    if (baseColumn instanceof BRLActionVariableColumn) {
+                    if (baseColumn instanceof BRLVariableColumn) {
 
                         final StringBuilder result = new StringBuilder();
-                        final BRLActionColumn brlColumn = dtable.getBRLColumn((BRLActionVariableColumn) baseColumn);
+                        final BRLColumn brlColumn = dtable.getBRLColumn((BRLVariableColumn) baseColumn);
                         int size = brlColumn.getChildColumns().size();
                         for (int i = 0; i < size; i++) {
                             DTCellValue52 newCell = row.get(sourceColumnIndex);
                             final String value = getValue(newCell,
-                                                          getColumnDataType(sourceColumnIndex), // newCell.getDataType(),
-                                                          false);
-                            if (value != null && isMissingVariable(brlColumn)) {
-                                if (Objects.equals("true", value.toLowerCase())) {
-                                    result.append("X");
-                                }
-                                break;
-                            } else if (value != null) {
-                                result.append(value);
-                            }
-                            if (i < size - 1) {
-                                result.append(", ");
-                                sourceColumnIndex++;
-                            }
-                        }
-
-                        xlsRow.createCell(targetColumnIndex)
-                                .setCellValue(result.toString());
-                    } else if (baseColumn instanceof BRLConditionVariableColumn) {
-
-                        final StringBuilder result = new StringBuilder();
-                        final BRLConditionColumn brlColumn = dtable.getBRLColumn((BRLConditionVariableColumn) baseColumn);
-                        int size = brlColumn.getChildColumns().size();
-                        for (int i = 0; i < size; i++) {
-                            DTCellValue52 newCell = row.get(sourceColumnIndex);
-                            final String value = getValue(newCell,
-                                                          getColumnDataType(sourceColumnIndex), //newCell.getDataType(),
+                                                          getColumnDataType(sourceColumnIndex),
                                                           false);
                             if (value != null && isMissingVariable(brlColumn)) {
                                 if (Objects.equals("true", value.toLowerCase())) {
@@ -299,7 +272,7 @@ public class DataBuilder {
                                       final boolean addQuotes) {
             if (isTheRealCellValueString(sourceColumnIndex) && cell.getStringValue() != null) {
 
-                if (cell.getStringValue() != null && !cell.getStringValue().isEmpty()) {
+                if (!StringUtils.isEmpty(cell.getStringValue())) {
                     if (isOperator("in")) {
                         return String.format("(%s)", fixStringValue(cell));
                     } else {

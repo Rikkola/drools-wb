@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.drools.workbench.models.datamodel.rule.ActionInsertFact;
+import org.drools.workbench.models.datamodel.rule.IAction;
 import org.drools.workbench.models.guided.dtable.backend.GuidedDTDRLPersistence;
 import org.drools.workbench.models.guided.dtable.shared.model.BRLActionColumn;
 import org.drools.workbench.models.guided.dtable.shared.model.BRLConditionColumn;
@@ -50,7 +51,7 @@ public class BRLColumnSubHeaderBuilder {
         dt.getConditions().addAll(dtable.getConditions());
         final ArrayList<DTCellValue52> list = new ArrayList<>();
 
-        for (Object o : brlColumn.getDefinition()) {
+        for (IAction o : brlColumn.getDefinition()) {
             if (o instanceof ActionInsertFact) {
                 ActionInsertFact insertFact = (ActionInsertFact) o;
                 if (insertFact.getBoundName() == null) {
