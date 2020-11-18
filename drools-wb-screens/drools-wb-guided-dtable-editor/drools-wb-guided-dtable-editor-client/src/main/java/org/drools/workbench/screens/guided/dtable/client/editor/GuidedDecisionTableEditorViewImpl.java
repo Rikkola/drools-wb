@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.drools.workbench.screens.guided.dtable.client.resources.i18n.GuidedDecisionTableConstants;
 import org.drools.workbench.screens.guided.dtable.client.widget.table.GuidedDecisionTableModellerView;
+import org.drools.workbench.screens.guided.dtable.shared.XLSConversionResultMessage;
 import org.kie.workbench.common.widgets.client.popups.list.MessageType;
 import org.kie.workbench.common.widgets.client.popups.list.PopupListWidget;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
@@ -79,10 +80,10 @@ public class GuidedDecisionTableEditorViewImpl
     }
 
     @Override
-    public void showConversionSuccess(final Set<String> infoMessages) {
+    public void showConversionSuccess(final Set<XLSConversionResultMessage> infoMessages) {
         popupListWidget.setTitle(GuidedDecisionTableConstants.INSTANCE.TableConvertedSuccessfully());
-        for (String infoMessage : infoMessages) {
-            popupListWidget.addListMessage(MessageType.INFO, infoMessage);
+        for (XLSConversionResultMessage infoMessage : infoMessages) {
+            popupListWidget.addListMessage(MessageType.INFO, ConversionInfoMessageTranslator.translate(infoMessage));
         }
         popupListWidget.show();
     }
